@@ -115,7 +115,7 @@ def _alert_fingerprint(signal: dict[str, Any]) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
 
 
-def _format_buy_setup_message(
+def format_buy_setup_alert(
     signal: dict[str, Any],
     paper_order_status: str | None = None,
 ) -> str:
@@ -143,46 +143,59 @@ def _format_buy_setup_message(
 
     paper_line = paper_order_status or _get_value(signal, "paper_order_status", default="Not submitted")
 
-    lines = [
-        f"🟢 BUY SETUP: {symbol}",
-        "",
-        f"Price: {_money(price)}",
-        f"Day move: {_pct(day_move)}",
-        "",
-        f"Entry goal: {_money(entry)}",
-        f"Better entry: {_money(better_entry)}",
-        f"Stop loss: {_money(stop)}",
-        f"Sell target 1: {_money(target_1)}",
-        f"Sell target 2: {_money(target_2)}",
-        "",
-        f"Opportunity score: {opportunity_score}/100",
-        f"Entry score: {entry_score}/100",
-        f"Confidence: {confidence}",
-        f"Risk/reward: {rr}",
-        f"Chase risk: {chase_risk}",
-        f"Tradeability: {tradeability}",
-        "",
-        f"Reason: {reason}",
-        f"Paper order: {paper_line}",
-        "",
-        "Paper-only research alert. Confirm chart before acting.",
-    ]
-
-    return "\n".join(lines)
-
-
-# Public compatibility function used by tests/test_scoring.py.
-def format_buy_setup_alert(
-    signal: dict[str, Any],
-    paper_order_status: str | None = None,
-) -> str:
-    return _format_buy_setup_message(
-        signal=signal,
-        paper_order_status=paper_order_status,
+    return "\n".join(
+        [
+            f"🟢 BUY SETUP: {symbol}",
+            "",
+            f"Price: {_money(price)}",
+            f"Day move: {_pct(day_move)}",
+            "",
+            f"Entry goal: {_money(entry)}",
+            f"Better entry: {_money(better_entry)}",
+            f"Stop loss: {_money(stop)}",
+            f"Sell target 1: {_money(target_1)}",
+            f"Sell target 2: {_money(target_2)}",
+            "",
+            f"Opportunity score: {opportunity_score}/100",
+            f"Entry score: {entry_score}/100",
+            f"Confidence: {confidence}",
+            f"Risk/reward: {rr}",
+            f"Chase risk: {chase_risk}",
+            f"Tradeability: {tradeability}",
+            "",
+            f"Reason: {reason}",
+            f"Paper order: {paper_line}",
+            "",
+            "Paper-only research alert. Confirm chart before acting.",
+        ]
     )
 
 
-def _send_telegram_message(text: str) -> tuple[bool, str]:
+def format_wait_setup_alert(signal: dict[str, Any]) -> str:
+    """
+    Compatibility only.
+
+    Telegram is BUY_SETUP_ONLY now, so WAIT alerts should not be sent.
+    This function exists because src/execution.py still imports it.
+    """
+    symbol = _signal_symbol(signal)
+    better_entry = _get_value(signal, "better_entry", "pullback_entry", "ideal_entry")
+    stop = _get_value(signal, "stop_loss", "stop", "sl")
+    reason = _get_value(signal, "reason", "why", "summary", default="WAIT setup.")
+
+    return "\n".join(
+        [
+            f"🟡 WAIT: {symbol}",
+            "",
+            "Dashboard-only. No Telegram alert should be sent for WAIT.",
+            f"Better entry: {_money(better_entry)}",
+            f"Stop loss: {_money(stop)}",
+            f"Reason: {reason}",
+        ]
+    )
+
+
+def send_telegram_message(text: str) -> tuple[bool, str]:
     token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
@@ -210,6 +223,10 @@ def _send_telegram_message(text: str) -> tuple[bool, str]:
         return False, f"telegram error: {exc}"
 
 
+def _send_telegram_message(text: str) -> tuple[bool, str]:
+    return send_telegram_message(text)
+
+
 def send_buy_setup_alerts(
     signals: list[dict[str, Any]],
     execution_results: dict[str, Any] | None = None,
@@ -218,7 +235,7 @@ def send_buy_setup_alerts(
     """
     Telegram policy: BUY_SETUP_ONLY.
 
-    This function only sends Telegram alerts for:
+    Only sends Telegram alerts for:
       decision == BUY SETUP
 
     WAIT, WATCH ONLY, and AVOID stay on the dashboard only.
@@ -270,10 +287,10 @@ def send_buy_setup_alerts(
                 if isinstance(symbol_result, dict):
                     paper_status = symbol_result.get("status") or symbol_result.get("message")
 
-        message = _format_buy_setup_message(signal, paper_status)
+        message = format_buy_setup_alert(signal, paper_status)
 
         summary["buy_alerts_attempted"] += 1
-        ok, status = _send_telegram_message(message)
+        ok, status = send_telegram_message(message)
 
         if ok:
             sent_alerts[fingerprint] = {
