@@ -1,10 +1,3 @@
-/* Elite Scanner 100/100
-   Dashboard policy:
-   - Signal cards show BUY SETUP only
-   - WAIT / WATCH / AVOID stay hidden from cards and table
-   - Telegram policy should also be BUY SETUP only
-*/
-
 const SIGNALS_URL = "data/signals.json";
 const EXECUTION_URL = "data/execution.json";
 
@@ -13,7 +6,7 @@ function safe(value, fallback = "N/A") {
   return value;
 }
 
-function asNumber(value, fallback = 0) {
+function number(value, fallback = 0) {
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
 }
@@ -21,10 +14,7 @@ function asNumber(value, fallback = 0) {
 function money(value) {
   const n = Number(value);
   if (!Number.isFinite(n) || n <= 0) return "N/A";
-  return `$${n.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function pct(value) {
@@ -42,11 +32,10 @@ function getValue(obj, keys, fallback = null) {
     }
   }
 
-  const levels = obj.levels;
-  if (levels && typeof levels === "object") {
+  if (obj.levels && typeof obj.levels === "object") {
     for (const key of keys) {
-      if (levels[key] !== undefined && levels[key] !== null && levels[key] !== "") {
-        return levels[key];
+      if (obj.levels[key] !== undefined && obj.levels[key] !== null && obj.levels[key] !== "") {
+        return obj.levels[key];
       }
     }
   }
@@ -55,74 +44,51 @@ function getValue(obj, keys, fallback = null) {
 }
 
 function normalizeDecision(signal) {
-  return String(
-    getValue(signal, ["decision", "status", "action", "label"], "")
-  )
+  return String(getValue(signal, ["decision", "status", "action", "label"], ""))
     .trim()
     .toUpperCase();
 }
 
-function isBuySetup(signal) {
-  return normalizeDecision(signal) === "BUY SETUP";
-}
-
 function normalizeSignals(payload) {
-  if (!payload || typeof payload !== "object") return [];
-
   const raw =
-    payload.signals ||
-    payload.picks ||
-    payload.opportunities ||
-    payload.rows ||
+    payload?.signals ||
+    payload?.picks ||
+    payload?.opportunities ||
+    payload?.rows ||
     [];
 
   if (!Array.isArray(raw)) return [];
 
-  return raw.map((signal) => {
-    const advanced =
-      signal.advanced_breakdown ||
-      signal.breakdown ||
-      signal.scores ||
-      {};
-
-    const reason =
-      getValue(signal, ["reason", "why", "summary"], null) ||
-      (Array.isArray(signal.notes) ? signal.notes.slice(0, 3).join("; ") : null) ||
-      "BUY SETUP found.";
+  return raw.map((s) => {
+    const advanced = s.advanced_breakdown || s.breakdown || s.scores || {};
+    const notes = Array.isArray(s.notes) ? s.notes : Array.isArray(s.reasons) ? s.reasons : [];
 
     return {
-      raw: signal,
-      symbol: String(getValue(signal, ["symbol", "ticker"], "UNKNOWN")).toUpperCase(),
-      decision: normalizeDecision(signal) || "WATCH ONLY",
-
-      price: getValue(signal, ["price", "last_price", "current_price"], 0),
-      dayMove: getValue(signal, ["day_move_pct", "change_pct", "pct_change"], 0),
-
-      entry: getValue(signal, ["entry", "entry_goal", "entry_area", "buy_zone"], 0),
-      betterEntry: getValue(signal, ["better_entry", "pullback_entry", "ideal_entry"], 0),
-      stopLoss: getValue(signal, ["stop_loss", "stop", "sl"], 0),
-      target1: getValue(signal, ["target_1", "target1", "tp1", "sell_target_1"], 0),
-      target2: getValue(signal, ["target_2", "target2", "tp2", "sell_target_2"], 0),
-      targetSource: getValue(signal, ["target_1_source", "target_source"], "N/A"),
-
-      opportunityScore: getValue(signal, ["opportunity_score", "score", "total_score"], "N/A"),
-      entryScore: getValue(signal, ["entry_score", "trade_score", "setup_score"], "N/A"),
-      confidence: getValue(signal, ["confidence"], "N/A"),
-      rr: getValue(signal, ["risk_reward", "rr", "risk_reward_ratio"], "N/A"),
-      chaseRisk: getValue(signal, ["chase_risk"], "N/A"),
-      tradeability: getValue(signal, ["tradeability"], "N/A"),
-      vwapDistance: getValue(signal, ["vwap_distance_pct", "vwap_dist_pct", "vwap_distance"], "N/A"),
-      volumeRatio: getValue(signal, ["volume_ratio", "vol_ratio", "relative_volume"], "N/A"),
-      sectorEtf: getValue(signal, ["sector_etf"], "N/A"),
-      sectorVsSpy: getValue(signal, ["sector_vs_spy_pct", "sector_vs_spy"], "N/A"),
-
-      reason,
-      notes: Array.isArray(signal.notes)
-        ? signal.notes
-        : Array.isArray(signal.reasons)
-        ? signal.reasons
-        : [],
-
+      symbol: String(getValue(s, ["symbol", "ticker"], "UNKNOWN")).toUpperCase(),
+      decision: normalizeDecision(s) || "WATCH ONLY",
+      price: getValue(s, ["price", "last_price", "current_price"], 0),
+      dayMove: getValue(s, ["day_move_pct", "change_pct", "pct_change"], 0),
+      entry: getValue(s, ["entry", "entry_goal", "entry_area", "buy_zone"], 0),
+      betterEntry: getValue(s, ["better_entry", "pullback_entry", "ideal_entry"], 0),
+      stopLoss: getValue(s, ["stop_loss", "stop", "sl"], 0),
+      target1: getValue(s, ["target_1", "target1", "tp1", "sell_target_1"], 0),
+      target2: getValue(s, ["target_2", "target2", "tp2", "sell_target_2"], 0),
+      targetSource: getValue(s, ["target_1_source", "target_source"], "N/A"),
+      opportunityScore: getValue(s, ["opportunity_score", "score", "total_score"], "N/A"),
+      entryScore: getValue(s, ["entry_score", "trade_score", "setup_score"], "N/A"),
+      confidence: getValue(s, ["confidence"], "N/A"),
+      rr: getValue(s, ["risk_reward", "rr", "risk_reward_ratio"], "N/A"),
+      chaseRisk: getValue(s, ["chase_risk"], "N/A"),
+      tradeability: getValue(s, ["tradeability"], "N/A"),
+      vwapDistance: getValue(s, ["vwap_distance_pct", "vwap_dist_pct", "vwap_distance"], "N/A"),
+      volumeRatio: getValue(s, ["volume_ratio", "vol_ratio", "relative_volume"], "N/A"),
+      sectorEtf: getValue(s, ["sector_etf"], "N/A"),
+      sectorVsSpy: getValue(s, ["sector_vs_spy_pct", "sector_vs_spy"], "N/A"),
+      reason:
+        getValue(s, ["reason", "why", "summary"], null) ||
+        notes.slice(0, 3).join("; ") ||
+        "BUY SETUP found.",
+      notes,
       advanced,
     };
   });
@@ -138,131 +104,72 @@ function grade(score) {
   return "F";
 }
 
-function scoreRow(label, item) {
+function advancedRow(label, item) {
   if (!item) {
-    return `
-      <div class="advanced-row">
-        <div>
-          <strong>${label}</strong>
-          <p>No data yet</p>
-        </div>
-        <span>N/A</span>
-      </div>
-    `;
+    return `<div class="adv-row"><span>${label}</span><strong>N/A</strong><p>No data yet</p></div>`;
   }
 
   if (typeof item === "number") {
-    return `
-      <div class="advanced-row">
-        <div>
-          <strong>${label}</strong>
-          <p>score driver</p>
-        </div>
-        <span>${grade(item)} · ${item}/100</span>
-      </div>
-    `;
+    return `<div class="adv-row"><span>${label}</span><strong>${grade(item)} · ${item}/100</strong><p>Score driver</p></div>`;
   }
 
   if (typeof item === "object") {
     const score = item.score ?? item.value ?? item.points ?? "N/A";
-    const text = item.reason || item.note || item.summary || item.label || "score driver";
-
-    return `
-      <div class="advanced-row">
-        <div>
-          <strong>${label}</strong>
-          <p>${safe(text)}</p>
-        </div>
-        <span>${grade(score)} · ${score}/100</span>
-      </div>
-    `;
+    const text = item.reason || item.note || item.summary || item.label || "Score driver";
+    return `<div class="adv-row"><span>${label}</span><strong>${grade(score)} · ${score}/100</strong><p>${safe(text)}</p></div>`;
   }
 
-  return `
-    <div class="advanced-row">
-      <div>
-        <strong>${label}</strong>
-        <p>${safe(item)}</p>
-      </div>
-      <span>N/A</span>
-    </div>
-  `;
+  return `<div class="adv-row"><span>${label}</span><strong>N/A</strong><p>${safe(item)}</p></div>`;
 }
 
-function renderSignalCard(signal) {
-  const notes = signal.notes
+function renderCard(s) {
+  const notes = s.notes
     .slice(0, 8)
     .map((note) => `<span class="tag">${note}</span>`)
     .join("");
 
   return `
-    <article class="signal-card buy-only-card">
-      <div class="card-top">
+    <article class="card signal-card">
+      <div class="card-head">
         <div>
-          <h3>${signal.symbol}</h3>
-          <p>Price ${money(signal.price)} · ${pct(signal.dayMove)} today</p>
+          <h3>${s.symbol}</h3>
+          <p>${money(s.price)} · ${pct(s.dayMove)} today</p>
         </div>
-        <span class="decision-pill buy">BUY SETUP</span>
+        <span class="pill buy">BUY SETUP</span>
       </div>
 
-      <p class="action-text">${safe(signal.reason)}</p>
+      <p class="action">${safe(s.reason)}</p>
 
-      <div class="levels-grid">
-        <div>
-          <span>Entry Goal</span>
-          <strong>${money(signal.entry)}</strong>
-        </div>
-        <div>
-          <span>Better Entry</span>
-          <strong>${money(signal.betterEntry)}</strong>
-        </div>
-        <div>
-          <span>Stop Loss</span>
-          <strong>${money(signal.stopLoss)}</strong>
-        </div>
-        <div>
-          <span>Sell Target 1</span>
-          <strong>${money(signal.target1)}</strong>
-        </div>
-        <div>
-          <span>Sell Target 2</span>
-          <strong>${money(signal.target2)}</strong>
-        </div>
-        <div>
-          <span>Target Source</span>
-          <strong>${safe(signal.targetSource)}</strong>
-        </div>
+      <div class="levels">
+        <div><span>Entry</span><strong>${money(s.entry)}</strong></div>
+        <div><span>Better Entry</span><strong>${money(s.betterEntry)}</strong></div>
+        <div><span>Stop Loss</span><strong>${money(s.stopLoss)}</strong></div>
+        <div><span>Target 1</span><strong>${money(s.target1)}</strong></div>
+        <div><span>Target 2</span><strong>${money(s.target2)}</strong></div>
+        <div><span>Target Source</span><strong>${safe(s.targetSource)}</strong></div>
       </div>
 
-      <div class="score-grid">
-        <div><span>Opportunity</span><strong>${safe(signal.opportunityScore)}/100</strong></div>
-        <div><span>Entry</span><strong>${safe(signal.entryScore)}/100</strong></div>
-        <div><span>Confidence</span><strong>${safe(signal.confidence)}</strong></div>
-        <div><span>RR</span><strong>${safe(signal.rr)}</strong></div>
-        <div><span>Chase Risk</span><strong>${safe(signal.chaseRisk)}</strong></div>
-        <div><span>Tradeability</span><strong>${safe(signal.tradeability)}</strong></div>
-        <div><span>VWAP Dist.</span><strong>${safe(signal.vwapDistance)}%</strong></div>
-        <div><span>Vol Ratio</span><strong>${safe(signal.volumeRatio)}x</strong></div>
-        <div><span>Sector ETF</span><strong>${safe(signal.sectorEtf)}</strong></div>
-        <div><span>Sector vs SPY</span><strong>${safe(signal.sectorVsSpy)}%</strong></div>
+      <div class="metrics">
+        <div><span>Opportunity</span><strong>${safe(s.opportunityScore)}/100</strong></div>
+        <div><span>Entry</span><strong>${safe(s.entryScore)}/100</strong></div>
+        <div><span>Confidence</span><strong>${safe(s.confidence)}</strong></div>
+        <div><span>RR</span><strong>${safe(s.rr)}</strong></div>
+        <div><span>Chase Risk</span><strong>${safe(s.chaseRisk)}</strong></div>
+        <div><span>Tradeability</span><strong>${safe(s.tradeability)}</strong></div>
       </div>
 
-      <details class="advanced-box">
+      <details class="advanced">
         <summary>Advanced Logic Breakdown</summary>
-        <div class="advanced-content">
-          ${scoreRow("Catalyst", signal.advanced.catalyst)}
-          ${scoreRow("Technical", signal.advanced.technicals || signal.advanced.technical)}
-          ${scoreRow("Volume / Liquidity", signal.advanced.volume_liquidity || signal.advanced.volume)}
-          ${scoreRow("Relative Strength", signal.advanced.relative_strength)}
-          ${scoreRow("Sector / Market", signal.advanced.sector_market || signal.advanced.sector)}
-          ${scoreRow("Risk Quality", signal.advanced.risk_quality || signal.advanced.risk)}
-          ${scoreRow("Execution Timing", signal.advanced.execution_timing || signal.advanced.execution)}
-        </div>
+        ${advancedRow("Catalyst", s.advanced.catalyst)}
+        ${advancedRow("Technical", s.advanced.technicals || s.advanced.technical)}
+        ${advancedRow("Volume / Liquidity", s.advanced.volume_liquidity || s.advanced.volume)}
+        ${advancedRow("Relative Strength", s.advanced.relative_strength)}
+        ${advancedRow("Sector / Market", s.advanced.sector_market || s.advanced.sector)}
+        ${advancedRow("Risk Quality", s.advanced.risk_quality || s.advanced.risk)}
+        ${advancedRow("Execution Timing", s.advanced.execution_timing || s.advanced.execution)}
       </details>
 
-      <div class="tags">
-        ${notes}
-      </div>
+      <div class="tags">${notes}</div>
     </article>
   `;
 }
@@ -270,32 +177,27 @@ function renderSignalCard(signal) {
 function renderTable(signals) {
   if (!signals.length) {
     return `
-      <section class="panel">
+      <section class="card">
         <h2>Simple Table</h2>
-        <p class="empty">No BUY SETUP signals for the table right now.</p>
+        <p class="muted">No BUY SETUP signals right now.</p>
       </section>
     `;
   }
 
-  const rows = signals
-    .map(
-      (signal) => `
-        <tr>
-          <td>${signal.symbol}</td>
-          <td><span class="decision-pill buy">BUY SETUP</span></td>
-          <td>${money(signal.price)}</td>
-          <td>${money(signal.entry)}</td>
-          <td>${money(signal.betterEntry)}</td>
-          <td>${money(signal.stopLoss)}</td>
-          <td>${money(signal.target1)}</td>
-          <td>${safe(signal.reason)}</td>
-        </tr>
-      `
-    )
-    .join("");
+  const rows = signals.map((s) => `
+    <tr>
+      <td>${s.symbol}</td>
+      <td><span class="pill buy">BUY SETUP</span></td>
+      <td>${money(s.price)}</td>
+      <td>${money(s.entry)}</td>
+      <td>${money(s.betterEntry)}</td>
+      <td>${money(s.stopLoss)}</td>
+      <td>${money(s.target1)}</td>
+    </tr>
+  `).join("");
 
   return `
-    <section class="panel">
+    <section class="card">
       <h2>Simple Table</h2>
       <div class="table-wrap">
         <table>
@@ -308,7 +210,6 @@ function renderTable(signals) {
               <th>Better Entry</th>
               <th>Stop</th>
               <th>Target 1</th>
-              <th>Why</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -318,167 +219,139 @@ function renderTable(signals) {
   `;
 }
 
-function getApiValue(api, keys, fallback = "N/A") {
-  return getValue(api, keys, fallback);
+function apiDisplay(api) {
+  const wideUsed = api.wide_scan_used ?? api.wide_scanned ?? api.wide_scan_count ?? api.wide_scan;
+  const wideMax = api.wide_scan_limit ?? api.wide_limit;
+  const deepUsed = api.deep_scan_used ?? api.deep_scanned ?? api.deep_scan_count ?? api.deep_scan;
+  const deepMax = api.deep_scan_limit ?? api.deep_limit;
+  const callsUsed = api.estimated_calls ?? api.est_data_calls ?? api.data_calls;
+  const callsMax = api.max_data_calls ?? api.call_limit;
+
+  return {
+    mode: api.mode || api.status || "N/A",
+    wide: wideMax ? `${wideUsed}/${wideMax}` : safe(wideUsed),
+    deep: deepMax ? `${deepUsed}/${deepMax}` : safe(deepUsed),
+    calls: callsMax ? `${callsUsed}/${callsMax}` : safe(callsUsed),
+  };
 }
 
-function renderStats(allSignals, buySignals, payload, execution) {
-  const waitCount = allSignals.filter((s) => s.decision === "WAIT").length;
-  const watchCount = allSignals.filter((s) => s.decision === "WATCH ONLY").length;
-  const avoidCount = allSignals.filter((s) => s.decision === "AVOID").length;
+function render(payload, execution) {
+  const all = normalizeSignals(payload);
+  const buys = all.filter((s) => s.decision === "BUY SETUP");
+  const waitCount = all.filter((s) => s.decision === "WAIT").length;
+  const watchCount = all.filter((s) => s.decision === "WATCH ONLY").length;
+  const avoidCount = all.filter((s) => s.decision === "AVOID").length;
 
   const market = payload.market_context || payload.market || {};
-  const api = payload.api_budget || payload.api || {};
-  const generatedAt =
-    payload.generated_at ||
-    payload.updated_at ||
-    payload.last_updated ||
-    payload.timestamp ||
-    "N/A";
+  const api = apiDisplay(payload.api_budget || payload.api || {});
+  const updated = payload.generated_at || payload.updated_at || payload.last_updated || payload.timestamp || "N/A";
 
-  const marketPhase = payload.market_phase || market.phase || market.market_phase || "N/A";
-  const dataHealth = payload.data_health || payload.data_status || "OK";
-  const regime = market.regime || payload.regime || "N/A";
+  const cards = buys.length
+    ? buys.map(renderCard).join("")
+    : `
+      <section class="empty-state card">
+        <h2>No BUY SETUP right now</h2>
+        <p>The scanner is working, but nothing currently meets the buy rules.</p>
+        <p>WAIT, WATCH ONLY, and AVOID names are hidden to keep the dashboard clean.</p>
+      </section>
+    `;
 
-  const spy = market.spy_change_pct ?? market.SPY ?? market.spy ?? "N/A";
-  const qqq = market.qqq_change_pct ?? market.QQQ ?? market.qqq ?? "N/A";
-  const iwm = market.iwm_change_pct ?? market.IWM ?? market.iwm ?? "N/A";
-
-  return `
+  document.getElementById("app").innerHTML = `
     <section class="hero">
       <div>
         <p class="eyebrow">Paper-only research dashboard</p>
         <h1>Elite Scanner 100/100</h1>
-        <p>Signal cards are filtered to <strong>BUY SETUP only</strong>. WAIT and WATCH names stay hidden from cards.</p>
+        <p>BUY SETUP-only dashboard. Clean view for action-ready names.</p>
       </div>
-      <div class="hero-meta">
+      <div class="updated-box">
         <span>Updated</span>
-        <strong>${generatedAt}</strong>
+        <strong>${updated}</strong>
       </div>
     </section>
 
     <section class="notice">
-      <strong>Important:</strong>
-      This dashboard is paper-only. Auto paper trading only runs if
-      <code>AUTO_PAPER_TRADE=true</code> in GitHub Secrets. Never use live keys.
+      <strong>Important:</strong> Paper-only research. Auto paper trading only runs when
+      <code>AUTO_PAPER_TRADE=true</code>. Never use live keys.
     </section>
 
-    <section class="grid panels">
-      <div class="panel">
+    <section class="top-grid">
+      <div class="card">
         <h2>Market Context</h2>
         <div class="mini-grid">
-          <div><span>Regime</span><strong>${safe(regime)}</strong></div>
-          <div><span>Market Phase</span><strong>${safe(marketPhase)}</strong></div>
-          <div><span>Data Health</span><strong>${safe(dataHealth)}</strong></div>
-          <div><span>SPY</span><strong>${pct(spy)}</strong></div>
-          <div><span>QQQ</span><strong>${pct(qqq)}</strong></div>
-          <div><span>IWM</span><strong>${pct(iwm)}</strong></div>
+          <div><span>Regime</span><strong>${safe(market.regime || payload.regime)}</strong></div>
+          <div><span>Phase</span><strong>${safe(market.phase || payload.market_phase)}</strong></div>
+          <div><span>Data</span><strong>${safe(payload.data_health || payload.data_status || "OK")}</strong></div>
+          <div><span>SPY</span><strong>${pct(market.spy_change_pct ?? market.spy ?? market.SPY)}</strong></div>
+          <div><span>QQQ</span><strong>${pct(market.qqq_change_pct ?? market.qqq ?? market.QQQ)}</strong></div>
+          <div><span>IWM</span><strong>${pct(market.iwm_change_pct ?? market.iwm ?? market.IWM)}</strong></div>
         </div>
       </div>
 
-      <div class="panel">
-        <h2>Paper Trading + Telegram</h2>
+      <div class="card">
+        <h2>Paper + Telegram</h2>
         <div class="mini-grid">
-          <div><span>Telegram Policy</span><strong>BUY SETUP ONLY</strong></div>
-          <div><span>Paper Orders</span><strong>${safe(execution.paper_orders_this_run || execution.orders_this_run || 0)}</strong></div>
+          <div><span>Policy</span><strong>BUY ONLY</strong></div>
+          <div><span>Orders</span><strong>${safe(execution.paper_orders_this_run || execution.orders_this_run || 0)}</strong></div>
           <div><span>Mode</span><strong>Paper only</strong></div>
         </div>
       </div>
 
-      <div class="panel">
+      <div class="card">
         <h2>API Budget</h2>
         <div class="mini-grid">
-          <div><span>Mode</span><strong>${safe(api.mode || api.status || "N/A")}</strong></div>
-          <div><span>Wide scan</span><strong>${safe(getApiValue(api, ["wide_scan", "wide_scanned", "wide_scan_count"], "N/A"))}</strong></div>
-          <div><span>Deep scan</span><strong>${safe(getApiValue(api, ["deep_scan", "deep_scanned", "deep_scan_count"], "N/A"))}</strong></div>
-          <div><span>Est. calls</span><strong>${safe(getApiValue(api, ["estimated_calls", "est_data_calls", "data_calls"], "N/A"))}</strong></div>
+          <div><span>Mode</span><strong>${api.mode}</strong></div>
+          <div><span>Wide</span><strong>${api.wide}</strong></div>
+          <div><span>Deep</span><strong>${api.deep}</strong></div>
+          <div><span>Calls</span><strong>${api.calls}</strong></div>
         </div>
       </div>
 
-      <div class="panel">
+      <div class="card">
         <h2>Signal Counts</h2>
         <div class="mini-grid">
-          <div><span>Buy Setups</span><strong>${buySignals.length}</strong></div>
+          <div><span>Buy</span><strong>${buys.length}</strong></div>
           <div><span>Wait Hidden</span><strong>${waitCount}</strong></div>
           <div><span>Watch Hidden</span><strong>${watchCount}</strong></div>
           <div><span>Avoid Hidden</span><strong>${avoidCount}</strong></div>
         </div>
       </div>
     </section>
+
+    <section class="section-head">
+      <h2>Signal Cards</h2>
+      <p>Showing BUY SETUP only.</p>
+    </section>
+
+    <section class="cards-grid">
+      ${cards}
+    </section>
+
+    ${renderTable(buys)}
   `;
 }
 
-function renderApp(payload, execution) {
-  const allSignals = normalizeSignals(payload);
-  const buySignals = allSignals.filter((signal) => signal.decision === "BUY SETUP");
-
-  const root =
-    document.getElementById("app") ||
-    document.getElementById("dashboard") ||
-    document.querySelector("main") ||
-    document.body;
-
-  const cards = buySignals.length
-    ? buySignals.map(renderSignalCard).join("")
-    : `
-      <section class="panel empty-panel">
-        <h2>No BUY SETUP right now</h2>
-        <p>The scanner is working, but nothing currently meets the buy rules.</p>
-        <p>WAIT, WATCH ONLY, and AVOID names are hidden from Signal Cards to keep the dashboard clean.</p>
-      </section>
-    `;
-
-  root.innerHTML = `
-    ${renderStats(allSignals, buySignals, payload, execution)}
-
-    <section class="panel explainer">
-      <h2>How to read this</h2>
-      <p><strong>BUY SETUP</strong> means the scanner found a valid setup with entry, stop loss, and sell targets.</p>
-      <p><strong>No card</strong> means the stock is not buy-ready yet. It may still be WAIT or WATCH in the raw data.</p>
-      <p>This dashboard is paper-only research. Confirm chart before acting.</p>
-    </section>
-
-    <section class="signal-section">
-      <div class="section-title">
-        <h2>Signal Cards</h2>
-        <p>Showing BUY SETUP only.</p>
-      </div>
-      <div class="signal-grid">
-        ${cards}
-      </div>
-    </section>
-
-    ${renderTable(buySignals)}
-  `;
-}
-
-async function loadJson(url, fallback = {}) {
+async function loadJson(url, fallback) {
   try {
-    const response = await fetch(`${url}?v=${Date.now()}`, { cache: "no-store" });
-
-    if (!response.ok) {
-      console.error(`Failed to load ${url}: HTTP ${response.status}`);
-      return fallback;
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`Failed to load ${url}`, error);
+    const res = await fetch(`${url}?v=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error(`Failed to load ${url}`, err);
     return fallback;
   }
 }
 
-async function initDashboard() {
-  const [signalsPayload, executionPayload] = await Promise.all([
-    loadJson(SIGNALS_URL, { signals: [], paper_only: true }),
+async function init() {
+  const [signals, execution] = await Promise.all([
+    loadJson(SIGNALS_URL, { paper_only: true, signals: [] }),
     loadJson(EXECUTION_URL, { paper_only: true }),
   ]);
 
-  renderApp(signalsPayload, executionPayload);
+  render(signals, execution);
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initDashboard);
+  document.addEventListener("DOMContentLoaded", init);
 } else {
-  initDashboard();
+  init();
 }
