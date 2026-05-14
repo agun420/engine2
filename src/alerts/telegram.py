@@ -107,9 +107,29 @@ def _alert_fingerprint(signal: dict[str, Any]) -> str:
     symbol = _signal_symbol(signal)
     decision = _signal_decision(signal)
 
-    entry = _get_value(signal, "entry", "entry_goal", "entry_area", "buy_zone", default="")
-    stop = _get_value(signal, "stop_loss", "stop", "sl", default="")
-    target = _get_value(signal, "target_1", "target1", "tp1", "sell_target_1", default="")
+    entry = _get_value(
+        signal,
+        "entry",
+        "entry_goal",
+        "entry_area",
+        "buy_zone",
+        default="",
+    )
+    stop = _get_value(
+        signal,
+        "stop_loss",
+        "stop",
+        "sl",
+        default="",
+    )
+    target = _get_value(
+        signal,
+        "target_1",
+        "target1",
+        "tp1",
+        "sell_target_1",
+        default="",
+    )
 
     raw = f"{symbol}|{decision}|{entry}|{stop}|{target}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
@@ -130,8 +150,20 @@ def format_buy_setup_alert(
     target_1 = _get_value(signal, "target_1", "target1", "tp1", "sell_target_1")
     target_2 = _get_value(signal, "target_2", "target2", "tp2", "sell_target_2")
 
-    opportunity_score = _get_value(signal, "opportunity_score", "score", "total_score", default="N/A")
-    entry_score = _get_value(signal, "entry_score", "trade_score", "setup_score", default="N/A")
+    opportunity_score = _get_value(
+        signal,
+        "opportunity_score",
+        "score",
+        "total_score",
+        default="N/A",
+    )
+    entry_score = _get_value(
+        signal,
+        "entry_score",
+        "trade_score",
+        "setup_score",
+        default="N/A",
+    )
     rr = _get_value(signal, "risk_reward", "rr", "risk_reward_ratio", default="N/A")
     confidence = _get_value(signal, "confidence", default="N/A")
     chase_risk = _get_value(signal, "chase_risk", default="N/A")
@@ -149,7 +181,11 @@ def format_buy_setup_alert(
             or "Not submitted"
         )
     else:
-        paper_line = paper_order_status or _get_value(signal, "paper_order_status", default="Not submitted")
+        paper_line = paper_order_status or _get_value(
+            signal,
+            "paper_order_status",
+            default="Not submitted",
+        )
 
     return "\n".join(
         [
@@ -195,7 +231,7 @@ def format_wait_setup_alert(signal: dict[str, Any]) -> str:
         [
             f"🟡 WAIT SETUP: {symbol}",
             "",
-            "Dashboard-only. No Telegram alert should be sent for WAIT.",
+            "Do not chase. Dashboard-only. No Telegram alert should be sent for WAIT.",
             f"Better entry: {_money(better_entry)}",
             f"Stop loss: {_money(stop)}",
             f"Reason: {reason}",
@@ -231,10 +267,17 @@ def send_telegram_message(text: str) -> dict[str, Any]:
         with urllib.request.urlopen(request, timeout=15) as response:
             if 200 <= response.status < 300:
                 return {"sent": True, "reason": "sent"}
-            return {"sent": False, "reason": f"telegram http {response.status}"}
+
+            return {
+                "sent": False,
+                "reason": f"telegram http {response.status}",
+            }
 
     except Exception as exc:
-        return {"sent": False, "reason": f"telegram error: {exc}"}
+        return {
+            "sent": False,
+            "reason": f"telegram error: {exc}",
+        }
 
 
 def _send_telegram_message(text: str) -> dict[str, Any]:
@@ -294,12 +337,17 @@ def send_buy_setup_alerts(
             continue
 
         paper_status = None
+
         if isinstance(execution_results, dict):
             by_symbol = execution_results.get("by_symbol")
             if isinstance(by_symbol, dict):
                 symbol_result = by_symbol.get(symbol)
                 if isinstance(symbol_result, dict):
-                    paper_status = symbol_result.get("status") or symbol_result.get("message")
+                    paper_status = (
+                        symbol_result.get("status")
+                        or symbol_result.get("message")
+                        or symbol_result.get("reason")
+                    )
 
         message = format_buy_setup_alert(signal, paper_status)
 
