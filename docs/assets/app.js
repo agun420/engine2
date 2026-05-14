@@ -1,25 +1,36 @@
-/* Elite Scanner 100 Dashboard
-   Signal card policy: BUY SETUP ONLY
+/* Elite Scanner 100/100
+   Dashboard policy:
+   - Signal cards show BUY SETUP only
+   - WAIT / WATCH / AVOID stay hidden from cards and table
+   - Telegram policy should also be BUY SETUP only
 */
 
 const SIGNALS_URL = "data/signals.json";
 const EXECUTION_URL = "data/execution.json";
 
+function safe(value, fallback = "N/A") {
+  if (value === undefined || value === null || value === "") return fallback;
+  return value;
+}
+
+function asNumber(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
 function money(value) {
   const n = Number(value);
   if (!Number.isFinite(n) || n <= 0) return "N/A";
-  return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `$${n.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
 
 function pct(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "N/A";
   return `${n.toFixed(2)}%`;
-}
-
-function safe(value, fallback = "N/A") {
-  if (value === undefined || value === null || value === "") return fallback;
-  return value;
 }
 
 function getValue(obj, keys, fallback = null) {
@@ -31,10 +42,11 @@ function getValue(obj, keys, fallback = null) {
     }
   }
 
-  if (obj.levels && typeof obj.levels === "object") {
+  const levels = obj.levels;
+  if (levels && typeof levels === "object") {
     for (const key of keys) {
-      if (obj.levels[key] !== undefined && obj.levels[key] !== null && obj.levels[key] !== "") {
-        return obj.levels[key];
+      if (levels[key] !== undefined && levels[key] !== null && levels[key] !== "") {
+        return levels[key];
       }
     }
   }
@@ -45,7 +57,9 @@ function getValue(obj, keys, fallback = null) {
 function normalizeDecision(signal) {
   return String(
     getValue(signal, ["decision", "status", "action", "label"], "")
-  ).trim().toUpperCase();
+  )
+    .trim()
+    .toUpperCase();
 }
 
 function isBuySetup(signal) {
@@ -71,10 +85,16 @@ function normalizeSignals(payload) {
       signal.scores ||
       {};
 
+    const reason =
+      getValue(signal, ["reason", "why", "summary"], null) ||
+      (Array.isArray(signal.notes) ? signal.notes.slice(0, 3).join("; ") : null) ||
+      "BUY SETUP found.";
+
     return {
       raw: signal,
       symbol: String(getValue(signal, ["symbol", "ticker"], "UNKNOWN")).toUpperCase(),
       decision: normalizeDecision(signal) || "WATCH ONLY",
+
       price: getValue(signal, ["price", "last_price", "current_price"], 0),
       dayMove: getValue(signal, ["day_move_pct", "change_pct", "pct_change"], 0),
 
@@ -96,8 +116,12 @@ function normalizeSignals(payload) {
       sectorEtf: getValue(signal, ["sector_etf"], "N/A"),
       sectorVsSpy: getValue(signal, ["sector_vs_spy_pct", "sector_vs_spy"], "N/A"),
 
-      reason: getValue(signal, ["reason", "why", "summary"], "BUY SETUP found."),
-      notes: Array.isArray(signal.notes) ? signal.notes : Array.isArray(signal.reasons) ? signal.reasons : [],
+      reason,
+      notes: Array.isArray(signal.notes)
+        ? signal.notes
+        : Array.isArray(signal.reasons)
+        ? signal.reasons
+        : [],
 
       advanced,
     };
@@ -142,6 +166,7 @@ function scoreRow(label, item) {
   if (typeof item === "object") {
     const score = item.score ?? item.value ?? item.points ?? "N/A";
     const text = item.reason || item.note || item.summary || item.label || "score driver";
+
     return `
       <div class="advanced-row">
         <div>
@@ -165,7 +190,10 @@ function scoreRow(label, item) {
 }
 
 function renderSignalCard(signal) {
-  const notes = signal.notes.slice(0, 8).map((note) => `<span class="tag">${note}</span>`).join("");
+  const notes = signal.notes
+    .slice(0, 8)
+    .map((note) => `<span class="tag">${note}</span>`)
+    .join("");
 
   return `
     <article class="signal-card buy-only-card">
@@ -207,15 +235,15 @@ function renderSignalCard(signal) {
       </div>
 
       <div class="score-grid">
-        <div><span>Opportunity</span><strong>${signal.opportunityScore}/100</strong></div>
-        <div><span>Entry</span><strong>${signal.entryScore}/100</strong></div>
-        <div><span>Confidence</span><strong>${signal.confidence}</strong></div>
-        <div><span>RR</span><strong>${signal.rr}</strong></div>
-        <div><span>Chase Risk</span><strong>${signal.chaseRisk}</strong></div>
-        <div><span>Tradeability</span><strong>${signal.tradeability}</strong></div>
+        <div><span>Opportunity</span><strong>${safe(signal.opportunityScore)}/100</strong></div>
+        <div><span>Entry</span><strong>${safe(signal.entryScore)}/100</strong></div>
+        <div><span>Confidence</span><strong>${safe(signal.confidence)}</strong></div>
+        <div><span>RR</span><strong>${safe(signal.rr)}</strong></div>
+        <div><span>Chase Risk</span><strong>${safe(signal.chaseRisk)}</strong></div>
+        <div><span>Tradeability</span><strong>${safe(signal.tradeability)}</strong></div>
         <div><span>VWAP Dist.</span><strong>${safe(signal.vwapDistance)}%</strong></div>
         <div><span>Vol Ratio</span><strong>${safe(signal.volumeRatio)}x</strong></div>
-        <div><span>Sector ETF</span><strong>${signal.sectorEtf}</strong></div>
+        <div><span>Sector ETF</span><strong>${safe(signal.sectorEtf)}</strong></div>
         <div><span>Sector vs SPY</span><strong>${safe(signal.sectorVsSpy)}%</strong></div>
       </div>
 
@@ -249,18 +277,22 @@ function renderTable(signals) {
     `;
   }
 
-  const rows = signals.map((signal) => `
-    <tr>
-      <td>${signal.symbol}</td>
-      <td><span class="decision-pill buy">BUY SETUP</span></td>
-      <td>${money(signal.price)}</td>
-      <td>${money(signal.entry)}</td>
-      <td>${money(signal.betterEntry)}</td>
-      <td>${money(signal.stopLoss)}</td>
-      <td>${money(signal.target1)}</td>
-      <td>${safe(signal.reason)}</td>
-    </tr>
-  `).join("");
+  const rows = signals
+    .map(
+      (signal) => `
+        <tr>
+          <td>${signal.symbol}</td>
+          <td><span class="decision-pill buy">BUY SETUP</span></td>
+          <td>${money(signal.price)}</td>
+          <td>${money(signal.entry)}</td>
+          <td>${money(signal.betterEntry)}</td>
+          <td>${money(signal.stopLoss)}</td>
+          <td>${money(signal.target1)}</td>
+          <td>${safe(signal.reason)}</td>
+        </tr>
+      `
+    )
+    .join("");
 
   return `
     <section class="panel">
@@ -286,6 +318,10 @@ function renderTable(signals) {
   `;
 }
 
+function getApiValue(api, keys, fallback = "N/A") {
+  return getValue(api, keys, fallback);
+}
+
 function renderStats(allSignals, buySignals, payload, execution) {
   const waitCount = allSignals.filter((s) => s.decision === "WAIT").length;
   const watchCount = allSignals.filter((s) => s.decision === "WATCH ONLY").length;
@@ -293,14 +329,27 @@ function renderStats(allSignals, buySignals, payload, execution) {
 
   const market = payload.market_context || payload.market || {};
   const api = payload.api_budget || payload.api || {};
-  const generatedAt = payload.generated_at || payload.updated_at || payload.last_updated || "N/A";
+  const generatedAt =
+    payload.generated_at ||
+    payload.updated_at ||
+    payload.last_updated ||
+    payload.timestamp ||
+    "N/A";
+
+  const marketPhase = payload.market_phase || market.phase || market.market_phase || "N/A";
+  const dataHealth = payload.data_health || payload.data_status || "OK";
+  const regime = market.regime || payload.regime || "N/A";
+
+  const spy = market.spy_change_pct ?? market.SPY ?? market.spy ?? "N/A";
+  const qqq = market.qqq_change_pct ?? market.QQQ ?? market.qqq ?? "N/A";
+  const iwm = market.iwm_change_pct ?? market.IWM ?? market.iwm ?? "N/A";
 
   return `
     <section class="hero">
       <div>
         <p class="eyebrow">Paper-only research dashboard</p>
         <h1>Elite Scanner 100/100</h1>
-        <p>Signal cards are now filtered to <strong>BUY SETUP only</strong>. WAIT and WATCH names stay hidden from cards.</p>
+        <p>Signal cards are filtered to <strong>BUY SETUP only</strong>. WAIT and WATCH names stay hidden from cards.</p>
       </div>
       <div class="hero-meta">
         <span>Updated</span>
@@ -308,13 +357,22 @@ function renderStats(allSignals, buySignals, payload, execution) {
       </div>
     </section>
 
+    <section class="notice">
+      <strong>Important:</strong>
+      This dashboard is paper-only. Auto paper trading only runs if
+      <code>AUTO_PAPER_TRADE=true</code> in GitHub Secrets. Never use live keys.
+    </section>
+
     <section class="grid panels">
       <div class="panel">
         <h2>Market Context</h2>
         <div class="mini-grid">
-          <div><span>Regime</span><strong>${safe(market.regime || payload.regime)}</strong></div>
-          <div><span>Market Phase</span><strong>${safe(payload.market_phase || market.phase)}</strong></div>
-          <div><span>Data Health</span><strong>${safe(payload.data_health || "OK")}</strong></div>
+          <div><span>Regime</span><strong>${safe(regime)}</strong></div>
+          <div><span>Market Phase</span><strong>${safe(marketPhase)}</strong></div>
+          <div><span>Data Health</span><strong>${safe(dataHealth)}</strong></div>
+          <div><span>SPY</span><strong>${pct(spy)}</strong></div>
+          <div><span>QQQ</span><strong>${pct(qqq)}</strong></div>
+          <div><span>IWM</span><strong>${pct(iwm)}</strong></div>
         </div>
       </div>
 
@@ -330,9 +388,10 @@ function renderStats(allSignals, buySignals, payload, execution) {
       <div class="panel">
         <h2>API Budget</h2>
         <div class="mini-grid">
-          <div><span>Wide scan</span><strong>${safe(api.wide_scan || api.wide_scanned || "N/A")}</strong></div>
-          <div><span>Deep scan</span><strong>${safe(api.deep_scan || api.deep_scanned || "N/A")}</strong></div>
-          <div><span>Est. calls</span><strong>${safe(api.estimated_calls || api.est_data_calls || "N/A")}</strong></div>
+          <div><span>Mode</span><strong>${safe(api.mode || api.status || "N/A")}</strong></div>
+          <div><span>Wide scan</span><strong>${safe(getApiValue(api, ["wide_scan", "wide_scanned", "wide_scan_count"], "N/A"))}</strong></div>
+          <div><span>Deep scan</span><strong>${safe(getApiValue(api, ["deep_scan", "deep_scanned", "deep_scan_count"], "N/A"))}</strong></div>
+          <div><span>Est. calls</span><strong>${safe(getApiValue(api, ["estimated_calls", "est_data_calls", "data_calls"], "N/A"))}</strong></div>
         </div>
       </div>
 
@@ -351,7 +410,7 @@ function renderStats(allSignals, buySignals, payload, execution) {
 
 function renderApp(payload, execution) {
   const allSignals = normalizeSignals(payload);
-  const buySignals = allSignals.filter(isBuySetup);
+  const buySignals = allSignals.filter((signal) => signal.decision === "BUY SETUP");
 
   const root =
     document.getElementById("app") ||
@@ -396,7 +455,12 @@ function renderApp(payload, execution) {
 async function loadJson(url, fallback = {}) {
   try {
     const response = await fetch(`${url}?v=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) return fallback;
+
+    if (!response.ok) {
+      console.error(`Failed to load ${url}: HTTP ${response.status}`);
+      return fallback;
+    }
+
     return await response.json();
   } catch (error) {
     console.error(`Failed to load ${url}`, error);
@@ -413,4 +477,8 @@ async function initDashboard() {
   renderApp(signalsPayload, executionPayload);
 }
 
-document.addEventListener("DOMContentLoaded", initDashboard);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDashboard);
+} else {
+  initDashboard();
+}
