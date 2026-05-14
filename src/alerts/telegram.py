@@ -117,7 +117,7 @@ def _alert_fingerprint(signal: dict[str, Any]) -> str:
 
 def format_buy_setup_alert(
     signal: dict[str, Any],
-    paper_order_status: str | None = None,
+    paper_order_status: Any | None = None,
 ) -> str:
     symbol = _signal_symbol(signal)
 
@@ -141,7 +141,15 @@ def format_buy_setup_alert(
     if isinstance(reason, list):
         reason = "; ".join(str(x) for x in reason[:5])
 
-    paper_line = paper_order_status or _get_value(signal, "paper_order_status", default="Not submitted")
+    if isinstance(paper_order_status, dict):
+        paper_line = (
+            paper_order_status.get("status")
+            or paper_order_status.get("reason")
+            or paper_order_status.get("message")
+            or "Not submitted"
+        )
+    else:
+        paper_line = paper_order_status or _get_value(signal, "paper_order_status", default="Not submitted")
 
     return "\n".join(
         [
@@ -176,7 +184,7 @@ def format_wait_setup_alert(signal: dict[str, Any]) -> str:
     Compatibility only.
 
     Telegram is BUY_SETUP_ONLY now, so WAIT alerts should not be sent.
-    This function exists because src/execution.py still imports it.
+    This function exists because src/execution.py and tests still import it.
     """
     symbol = _signal_symbol(signal)
     better_entry = _get_value(signal, "better_entry", "pullback_entry", "ideal_entry")
@@ -185,7 +193,7 @@ def format_wait_setup_alert(signal: dict[str, Any]) -> str:
 
     return "\n".join(
         [
-            f"🟡 WAIT: {symbol}",
+            f"🟡 WAIT SETUP: {symbol}",
             "",
             "Dashboard-only. No Telegram alert should be sent for WAIT.",
             f"Better entry: {_money(better_entry)}",
@@ -195,12 +203,18 @@ def format_wait_setup_alert(signal: dict[str, Any]) -> str:
     )
 
 
-def send_telegram_message(text: str) -> tuple[bool, str]:
+def send_telegram_message(text: str) -> dict[str, Any]:
+    """
+    Return dict for compatibility with src/execution.py.
+
+    Expected shape:
+      {"sent": bool, "reason": str}
+    """
     token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
     if not token or not chat_id:
-        return False, "telegram not configured"
+        return {"sent": False, "reason": "telegram not configured"}
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
 
@@ -216,14 +230,14 @@ def send_telegram_message(text: str) -> tuple[bool, str]:
         request = urllib.request.Request(url, data=payload, method="POST")
         with urllib.request.urlopen(request, timeout=15) as response:
             if 200 <= response.status < 300:
-                return True, "sent"
-            return False, f"telegram http {response.status}"
+                return {"sent": True, "reason": "sent"}
+            return {"sent": False, "reason": f"telegram http {response.status}"}
 
     except Exception as exc:
-        return False, f"telegram error: {exc}"
+        return {"sent": False, "reason": f"telegram error: {exc}"}
 
 
-def _send_telegram_message(text: str) -> tuple[bool, str]:
+def _send_telegram_message(text: str) -> dict[str, Any]:
     return send_telegram_message(text)
 
 
@@ -290,9 +304,9 @@ def send_buy_setup_alerts(
         message = format_buy_setup_alert(signal, paper_status)
 
         summary["buy_alerts_attempted"] += 1
-        ok, status = send_telegram_message(message)
+        result = send_telegram_message(message)
 
-        if ok:
+        if result.get("sent"):
             sent_alerts[fingerprint] = {
                 "symbol": symbol,
                 "decision": decision,
@@ -302,7 +316,9 @@ def send_buy_setup_alerts(
             summary["messages"].append(f"{symbol}: BUY SETUP Telegram sent")
         else:
             summary["buy_alerts_suppressed"] += 1
-            summary["messages"].append(f"{symbol}: BUY SETUP Telegram not sent - {status}")
+            summary["messages"].append(
+                f"{symbol}: BUY SETUP Telegram not sent - {result.get('reason', 'unknown')}"
+            )
 
     _save_alert_state(state)
     return summary
