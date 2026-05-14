@@ -231,7 +231,7 @@ def format_wait_setup_alert(signal: dict[str, Any]) -> str:
         [
             f"🟡 WAIT SETUP: {symbol}",
             "",
-            "Do not chase. Dashboard-only. No Telegram alert should be sent for WAIT.",
+            "Do not chase. Dashboard-only. No Telegram alert should be sent for WAIT. No paper order.",
             f"Better entry: {_money(better_entry)}",
             f"Stop loss: {_money(stop)}",
             f"Reason: {reason}",
