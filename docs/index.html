@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Elite Scanner 100/100</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Paper-only research dashboard</p>
+        <h1>Elite Scanner 100/100</h1>
+        <p class="sub">Simple signals for beginners: what to watch, where to enter, where to stop, and why.</p>
+      </div>
+      <div class="status-panel">
+        <div><span>Updated</span><strong id="updated">Loading...</strong></div>
+        <div><span>Market Phase</span><strong id="phase">Loading...</strong></div>
+        <div><span>Data Health</span><strong id="dataHealth">Loading...</strong></div>
+      </div>
+    </section>
+
+    <section class="notice">
+      <strong>Important:</strong> This dashboard is paper-only. Auto paper trading only runs if you set AUTO_PAPER_TRADE=true in GitHub Secrets. Never use live keys.
+      <span id="phaseWarning"></span>
+    </section>
+
+    <section class="market-card">
+      <h2>Market Context</h2>
+      <div class="market-grid">
+        <div><span>Regime</span><strong id="marketRegime">Loading...</strong></div>
+        <div><span>SPY</span><strong id="spyChange">N/A</strong></div>
+        <div><span>QQQ</span><strong id="qqqChange">N/A</strong></div>
+        <div><span>IWM</span><strong id="iwmChange">N/A</strong></div>
+      </div>
+      <p id="riskNote" class="sub"></p>
+    </section>
+
+    <section class="execution-card">
+      <h2>Paper Trading + Telegram</h2>
+      <div class="market-grid">
+        <div><span>Buy setups processed</span><strong id="execBuyCount">0</strong></div>
+        <div><span>Paper orders this run</span><strong id="execOrderCount">0</strong></div>
+        <div><span>Mode</span><strong>Paper only</strong></div>
+      </div>
+      <p id="execDetails" class="sub">Execution summary loads after the scanner runs.</p>
+    </section>
+
+    <section class="execution-card">
+      <h2>API Budget Mode</h2>
+      <div class="market-grid">
+        <div><span>Mode</span><strong id="apiMode">Loading...</strong></div>
+        <div><span>Wide scan</span><strong id="wideScan">0</strong></div>
+        <div><span>Deep scan</span><strong id="deepScan">0</strong></div>
+        <div><span>Est. data calls</span><strong id="dataCalls">0</strong></div>
+      </div>
+      <p class="sub">Middle ground setup: scan wide, trade narrow. If API status turns warning, reduce wide/deep limits.</p>
+    </section>
+
+    <section class="summary-grid">
+      <div class="summary-card buy"><span>Buy Setups</span><strong id="buyCount">0</strong></div>
+      <div class="summary-card wait"><span>Wait</span><strong id="waitCount">0</strong></div>
+      <div class="summary-card watch"><span>Watch Only</span><strong id="watchCount">0</strong></div>
+      <div class="summary-card"><span>Outcome Sample</span><strong id="outcomeSample">0</strong></div>
+    </section>
+
+    <section class="rules">
+      <h2>How to read this</h2>
+      <div id="rules"></div>
+    </section>
+
+    <section class="section-head">
+      <div>
+        <h2>Signal Cards</h2>
+        <p>Start here. The first line tells you exactly what to do. Open the advanced section when you want to inspect the deeper logic.</p>
+      </div>
+      <div class="legend">
+        <span><b class="dot buy"></b>Buy Setup</span>
+        <span><b class="dot wait"></b>Wait</span>
+        <span><b class="dot watch"></b>Watch</span>
+      </div>
+    </section>
+
+    <section id="cards" class="cards"></section>
+
+    <section class="table-wrap">
+      <h2>Simple Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Symbol</th><th>Decision</th><th>Price</th><th>Entry</th><th>Better Entry</th><th>Stop</th><th>Target 1</th><th>Why</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="assets/app.js"></script>
+</body>
+</html>

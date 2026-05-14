@@ -1,0 +1,81 @@
+name: Elite Scanner 100
+
+on:
+  workflow_dispatch:
+  schedule:
+    # New York regular session during daylight saving time: 9:30 AM-3:59 PM ET = 13:30-19:59 UTC.
+    # In winter, shift these one hour later if exact regular-session coverage is required.
+    - cron: "30-59/10 13 * * 1-5"
+    - cron: "*/10 14-19 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: elite-scanner-100-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: .
+      TZ: America/New_York
+      ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+      ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+      AUTO_PAPER_TRADE: ${{ secrets.AUTO_PAPER_TRADE }}
+      MAX_NOTIONAL_PER_TRADE: ${{ secrets.MAX_NOTIONAL_PER_TRADE }}
+      MAX_NEW_ORDERS_PER_RUN: ${{ secrets.MAX_NEW_ORDERS_PER_RUN }}
+      MAX_BUY_ALERTS_PER_RUN: ${{ secrets.MAX_BUY_ALERTS_PER_RUN }}
+      MAX_WAIT_ALERTS_PER_RUN: ${{ secrets.MAX_WAIT_ALERTS_PER_RUN }}
+      WIDE_SCAN_LIMIT: ${{ vars.WIDE_SCAN_LIMIT || '150' }}
+      DEEP_SCAN_LIMIT: ${{ vars.DEEP_SCAN_LIMIT || '40' }}
+      MAX_DATA_CALLS_PER_RUN: ${{ vars.MAX_DATA_CALLS_PER_RUN || '90' }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: pytest -q
+
+      - name: Clean test caches
+        run: |
+          find . -type d \( -name "__pycache__" -o -name ".pytest_cache" \) -prune -exec rm -rf {} +
+
+      - name: Run repo audit
+        run: python scripts/audit_repo.py
+
+      - name: Run scanner
+        run: python scripts/run_scanner.py
+
+      - name: Validate dashboard JSON
+        run: python scripts/build_dashboard.py
+
+      - name: Validate release gate
+        run: python scripts/validate_release.py
+
+      - name: Commit dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data state
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update scanner dashboard data"
+            git push
+          fi
