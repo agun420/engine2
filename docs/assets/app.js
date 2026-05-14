@@ -1,19 +1,15 @@
 const SIGNALS_URL = "data/signals.json";
 const EXECUTION_URL = "data/execution.json";
+const PAPER_ACCOUNT_URL = "data/paper_account.json";
 
 function safe(value, fallback = "N/A") {
   if (value === undefined || value === null || value === "") return fallback;
   return value;
 }
 
-function number(value, fallback = 0) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
-}
-
 function money(value) {
   const n = Number(value);
-  if (!Number.isFinite(n) || n <= 0) return "N/A";
+  if (!Number.isFinite(n)) return "N/A";
   return `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
@@ -21,6 +17,11 @@ function pct(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "N/A";
   return `${n.toFixed(2)}%`;
+}
+
+function num(value, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
 }
 
 function getValue(obj, keys, fallback = null) {
@@ -61,7 +62,11 @@ function normalizeSignals(payload) {
 
   return raw.map((s) => {
     const advanced = s.advanced_breakdown || s.breakdown || s.scores || {};
-    const notes = Array.isArray(s.notes) ? s.notes : Array.isArray(s.reasons) ? s.reasons : [];
+    const notes = Array.isArray(s.notes)
+      ? s.notes
+      : Array.isArray(s.reasons)
+      ? s.reasons
+      : [];
 
     return {
       symbol: String(getValue(s, ["symbol", "ticker"], "UNKNOWN")).toUpperCase(),
@@ -87,7 +92,7 @@ function normalizeSignals(payload) {
       reason:
         getValue(s, ["reason", "why", "summary"], null) ||
         notes.slice(0, 3).join("; ") ||
-        "BUY SETUP found.",
+        "Scanner signal.",
       notes,
       advanced,
     };
@@ -120,6 +125,27 @@ function advancedRow(label, item) {
   }
 
   return `<div class="adv-row"><span>${label}</span><strong>N/A</strong><p>${safe(item)}</p></div>`;
+}
+
+function pillClass(decision) {
+  if (decision === "BUY SETUP") return "buy";
+  if (decision === "WAIT") return "wait";
+  if (decision === "AVOID") return "avoid";
+  return "watch";
+}
+
+function getGeneratedAt(payload) {
+  return (
+    payload.generated_at ||
+    payload.updated_at ||
+    payload.last_updated ||
+    payload.timestamp ||
+    payload.as_of ||
+    payload.scanner_meta?.generated_at ||
+    payload.meta?.generated_at ||
+    payload.meta?.updated_at ||
+    "No timestamp yet"
+  );
 }
 
 function renderCard(s) {
@@ -174,31 +200,39 @@ function renderCard(s) {
   `;
 }
 
-function renderTable(signals) {
-  if (!signals.length) {
+function renderSimpleTable(allSignals) {
+  if (!allSignals.length) {
     return `
       <section class="card">
         <h2>Simple Table</h2>
-        <p class="muted">No BUY SETUP signals right now.</p>
+        <p class="muted">No scanner signals available yet.</p>
       </section>
     `;
   }
 
-  const rows = signals.map((s) => `
+  const rows = allSignals.map((s) => `
     <tr>
       <td>${s.symbol}</td>
-      <td><span class="pill buy">BUY SETUP</span></td>
+      <td><span class="pill ${pillClass(s.decision)}">${s.decision}</span></td>
       <td>${money(s.price)}</td>
       <td>${money(s.entry)}</td>
       <td>${money(s.betterEntry)}</td>
       <td>${money(s.stopLoss)}</td>
       <td>${money(s.target1)}</td>
+      <td>${safe(s.rr)}</td>
+      <td>${safe(s.reason)}</td>
     </tr>
   `).join("");
 
   return `
     <section class="card">
-      <h2>Simple Table</h2>
+      <div class="table-title">
+        <div>
+          <h2>Simple Table</h2>
+          <p class="muted">Showing all signals: BUY SETUP, WAIT, WATCH ONLY, and AVOID.</p>
+        </div>
+        <span class="small-badge">${allSignals.length} total</span>
+      </div>
       <div class="table-wrap">
         <table>
           <thead>
@@ -210,6 +244,8 @@ function renderTable(signals) {
               <th>Better Entry</th>
               <th>Stop</th>
               <th>Target 1</th>
+              <th>RR</th>
+              <th>Why</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -229,13 +265,202 @@ function apiDisplay(api) {
 
   return {
     mode: api.mode || api.status || "N/A",
-    wide: wideMax ? `${wideUsed}/${wideMax}` : safe(wideUsed),
-    deep: deepMax ? `${deepUsed}/${deepMax}` : safe(deepUsed),
-    calls: callsMax ? `${callsUsed}/${callsMax}` : safe(callsUsed),
+    wide: wideMax ? `${safe(wideUsed, 0)}/${wideMax}` : safe(wideUsed),
+    deep: deepMax ? `${safe(deepUsed, 0)}/${deepMax}` : safe(deepUsed),
+    calls: callsMax ? `${safe(callsUsed, 0)}/${callsMax}` : safe(callsUsed),
+    callsUsed: num(callsUsed),
+    callsMax: num(callsMax),
   };
 }
 
-function render(payload, execution) {
+function renderHealthPanel(payload, execution, allSignals) {
+  const api = apiDisplay(payload.api_budget || payload.api || {});
+  const dataHealth = payload.data_health || payload.data_status || "OK";
+  const generatedAt = getGeneratedAt(payload);
+  const buyCount = allSignals.filter((s) => s.decision === "BUY SETUP").length;
+  const waitCount = allSignals.filter((s) => s.decision === "WAIT").length;
+
+  const apiPct = api.callsMax > 0 ? Math.min(100, Math.round((api.callsUsed / api.callsMax) * 100)) : 0;
+
+  return `
+    <section class="card health-card">
+      <div class="table-title">
+        <div>
+          <h2>Dashboard Health</h2>
+          <p class="muted">Checks if the scanner, data, API budget, Telegram, and paper mode look healthy.</p>
+        </div>
+        <span class="status-dot ${String(dataHealth).toUpperCase() === "OK" ? "ok" : "warn"}">${safe(dataHealth)}</span>
+      </div>
+
+      <div class="health-grid">
+        <div><span>Last Update</span><strong>${generatedAt}</strong></div>
+        <div><span>Data Health</span><strong>${safe(dataHealth)}</strong></div>
+        <div><span>API Budget</span><strong>${api.calls}</strong><div class="bar"><i style="width:${apiPct}%"></i></div></div>
+        <div><span>Buy Setups</span><strong>${buyCount}</strong></div>
+        <div><span>Wait Signals</span><strong>${waitCount}</strong></div>
+        <div><span>Telegram Policy</span><strong>${safe(execution.telegram_policy || "BUY SETUP ONLY")}</strong></div>
+        <div><span>Auto Paper</span><strong>${execution.auto_paper_trade === true ? "ON" : "OFF"}</strong></div>
+        <div><span>Paper Orders This Run</span><strong>${safe(execution.paper_orders_this_run || execution.orders_this_run || 0)}</strong></div>
+      </div>
+    </section>
+  `;
+}
+
+function renderLearningPanel(payload) {
+  const learning =
+    payload.learning ||
+    payload.self_learning ||
+    payload.outcome_summary ||
+    payload.performance ||
+    {};
+
+  const sample = num(
+    learning.sample_size ??
+    learning.closed_signals ??
+    learning.total_closed ??
+    payload.outcome_sample ??
+    0
+  );
+
+  const winRate = num(
+    learning.win_rate ??
+    learning.target_hit_rate ??
+    learning.success_rate ??
+    0
+  );
+
+  const targetHits = num(learning.target_hits ?? learning.wins ?? 0);
+  const stops = num(learning.stop_hits ?? learning.losses ?? 0);
+  const expired = num(learning.expired ?? 0);
+
+  const scoreThreshold = safe(
+    learning.min_entry_score ||
+    learning.current_entry_threshold ||
+    learning.entry_threshold ||
+    "80"
+  );
+
+  const confidenceText =
+    sample < 20
+      ? "Learning mode is collecting data. Do not trust win rate yet."
+      : "Enough sample is starting to build. Review before changing thresholds.";
+
+  return `
+    <section class="card learning-card">
+      <div class="table-title">
+        <div>
+          <h2>Self-Learning Process</h2>
+          <p class="muted">Tracks closed signals. Adaptive learning should only start after 20–30 closed outcomes.</p>
+        </div>
+        <span class="small-badge">${sample} closed</span>
+      </div>
+
+      <div class="learning-layout">
+        <div class="donut" style="--value:${Math.min(100, Math.max(0, winRate))}">
+          <div>
+            <strong>${winRate ? `${winRate.toFixed(1)}%` : "N/A"}</strong>
+            <span>Success Rate</span>
+          </div>
+        </div>
+
+        <div class="learning-bars">
+          <div>
+            <span>Target Hits</span>
+            <strong>${targetHits}</strong>
+            <div class="bar"><i style="width:${sample ? Math.min(100, (targetHits / sample) * 100) : 0}%"></i></div>
+          </div>
+          <div>
+            <span>Stops</span>
+            <strong>${stops}</strong>
+            <div class="bar danger"><i style="width:${sample ? Math.min(100, (stops / sample) * 100) : 0}%"></i></div>
+          </div>
+          <div>
+            <span>Expired / EOD</span>
+            <strong>${expired}</strong>
+            <div class="bar neutral"><i style="width:${sample ? Math.min(100, (expired / sample) * 100) : 0}%"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="health-grid compact">
+        <div><span>Learning Status</span><strong>${sample >= 20 ? "Ready for guardrails" : "Collecting data"}</strong></div>
+        <div><span>Current Entry Threshold</span><strong>${scoreThreshold}</strong></div>
+        <div><span>Next Action</span><strong>${sample >= 20 ? "Review adaptive guard" : "Keep collecting"}</strong></div>
+      </div>
+
+      <p class="muted learning-note">${confidenceText}</p>
+    </section>
+  `;
+}
+
+function renderAlpacaPanel(account, execution) {
+  const acct = account?.account || account || {};
+  const positions = Array.isArray(account?.positions) ? account.positions : [];
+  const orders = Array.isArray(account?.orders) ? account.orders : [];
+
+  const equity = acct.equity ?? acct.portfolio_value ?? account?.equity;
+  const cash = acct.cash ?? account?.cash;
+  const buyingPower = acct.buying_power ?? account?.buying_power;
+  const pnl = acct.unrealized_pl ?? account?.unrealized_pl ?? account?.pnl;
+  const pnlPct = acct.unrealized_plpc ?? account?.unrealized_plpc;
+
+  const successRate =
+    account?.success_rate ??
+    account?.paper_success_rate ??
+    execution?.success_rate ??
+    execution?.paper_success_rate ??
+    null;
+
+  const positionRows = positions.slice(0, 5).map((p) => `
+    <tr>
+      <td>${safe(p.symbol)}</td>
+      <td>${safe(p.qty)}</td>
+      <td>${money(p.market_value)}</td>
+      <td>${money(p.unrealized_pl)}</td>
+    </tr>
+  `).join("");
+
+  return `
+    <section class="card alpaca-card">
+      <div class="table-title">
+        <div>
+          <h2>Alpaca Paper Dashboard</h2>
+          <p class="muted">Shows account value, cash, buying power, open positions, and paper performance when data is exported.</p>
+        </div>
+        <span class="status-dot ok">Paper</span>
+      </div>
+
+      <div class="health-grid">
+        <div><span>Equity</span><strong>${money(equity)}</strong></div>
+        <div><span>Cash</span><strong>${money(cash)}</strong></div>
+        <div><span>Buying Power</span><strong>${money(buyingPower)}</strong></div>
+        <div><span>Open P/L</span><strong>${money(pnl)}</strong></div>
+        <div><span>Open P/L %</span><strong>${pnlPct === null || pnlPct === undefined ? "N/A" : pct(Number(pnlPct) * 100)}</strong></div>
+        <div><span>Success Rate</span><strong>${successRate === null || successRate === undefined ? "N/A" : pct(successRate)}</strong></div>
+        <div><span>Open Positions</span><strong>${positions.length}</strong></div>
+        <div><span>Recent Orders</span><strong>${orders.length}</strong></div>
+      </div>
+
+      <div class="table-wrap mini-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Qty</th>
+              <th>Value</th>
+              <th>Open P/L</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${positionRows || `<tr><td colspan="4">No open paper positions exported yet.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+}
+
+function render(payload, execution, paperAccount) {
   const all = normalizeSignals(payload);
   const buys = all.filter((s) => s.decision === "BUY SETUP");
   const waitCount = all.filter((s) => s.decision === "WAIT").length;
@@ -244,7 +469,7 @@ function render(payload, execution) {
 
   const market = payload.market_context || payload.market || {};
   const api = apiDisplay(payload.api_budget || payload.api || {});
-  const updated = payload.generated_at || payload.updated_at || payload.last_updated || payload.timestamp || "N/A";
+  const updated = getGeneratedAt(payload);
 
   const cards = buys.length
     ? buys.map(renderCard).join("")
@@ -252,7 +477,7 @@ function render(payload, execution) {
       <section class="empty-state card">
         <h2>No BUY SETUP right now</h2>
         <p>The scanner is working, but nothing currently meets the buy rules.</p>
-        <p>WAIT, WATCH ONLY, and AVOID names are hidden to keep the dashboard clean.</p>
+        <p>WAIT, WATCH ONLY, and AVOID names are still shown in the Simple Table below.</p>
       </section>
     `;
 
@@ -261,7 +486,7 @@ function render(payload, execution) {
       <div>
         <p class="eyebrow">Paper-only research dashboard</p>
         <h1>Elite Scanner 100/100</h1>
-        <p>BUY SETUP-only dashboard. Clean view for action-ready names.</p>
+        <p>Main cards show <strong>BUY SETUP only</strong>. Simple Table shows every scanner signal.</p>
       </div>
       <div class="updated-box">
         <span>Updated</span>
@@ -292,6 +517,7 @@ function render(payload, execution) {
         <div class="mini-grid">
           <div><span>Policy</span><strong>BUY ONLY</strong></div>
           <div><span>Orders</span><strong>${safe(execution.paper_orders_this_run || execution.orders_this_run || 0)}</strong></div>
+          <div><span>Auto Paper</span><strong>${execution.auto_paper_trade === true ? "ON" : "OFF"}</strong></div>
           <div><span>Mode</span><strong>Paper only</strong></div>
         </div>
       </div>
@@ -310,11 +536,18 @@ function render(payload, execution) {
         <h2>Signal Counts</h2>
         <div class="mini-grid">
           <div><span>Buy</span><strong>${buys.length}</strong></div>
-          <div><span>Wait Hidden</span><strong>${waitCount}</strong></div>
-          <div><span>Watch Hidden</span><strong>${watchCount}</strong></div>
-          <div><span>Avoid Hidden</span><strong>${avoidCount}</strong></div>
+          <div><span>Wait</span><strong>${waitCount}</strong></div>
+          <div><span>Watch</span><strong>${watchCount}</strong></div>
+          <div><span>Avoid</span><strong>${avoidCount}</strong></div>
         </div>
       </div>
+    </section>
+
+    ${renderHealthPanel(payload, execution, all)}
+
+    <section class="two-col">
+      ${renderLearningPanel(payload)}
+      ${renderAlpacaPanel(paperAccount, execution)}
     </section>
 
     <section class="section-head">
@@ -326,7 +559,7 @@ function render(payload, execution) {
       ${cards}
     </section>
 
-    ${renderTable(buys)}
+    ${renderSimpleTable(all)}
   `;
 }
 
@@ -336,18 +569,19 @@ async function loadJson(url, fallback) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (err) {
-    console.error(`Failed to load ${url}`, err);
+    console.warn(`Could not load ${url}`, err);
     return fallback;
   }
 }
 
 async function init() {
-  const [signals, execution] = await Promise.all([
+  const [signals, execution, paperAccount] = await Promise.all([
     loadJson(SIGNALS_URL, { paper_only: true, signals: [] }),
     loadJson(EXECUTION_URL, { paper_only: true }),
+    loadJson(PAPER_ACCOUNT_URL, { paper_only: true, positions: [], orders: [] }),
   ]);
 
-  render(signals, execution);
+  render(signals, execution, paperAccount);
 }
 
 if (document.readyState === "loading") {
