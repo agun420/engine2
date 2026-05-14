@@ -171,6 +171,17 @@ def _format_buy_setup_message(
     return "\n".join(lines)
 
 
+# Public compatibility function used by tests/test_scoring.py.
+def format_buy_setup_alert(
+    signal: dict[str, Any],
+    paper_order_status: str | None = None,
+) -> str:
+    return _format_buy_setup_message(
+        signal=signal,
+        paper_order_status=paper_order_status,
+    )
+
+
 def _send_telegram_message(text: str) -> tuple[bool, str]:
     token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
@@ -207,7 +218,7 @@ def send_buy_setup_alerts(
     """
     Telegram policy: BUY_SETUP_ONLY.
 
-    This function only sends Telegram alerts for signals where:
+    This function only sends Telegram alerts for:
       decision == BUY SETUP
 
     WAIT, WATCH ONLY, and AVOID stay on the dashboard only.
@@ -280,7 +291,6 @@ def send_buy_setup_alerts(
     return summary
 
 
-# Backward-compatible function name.
 def process_telegram_alerts(
     signals: list[dict[str, Any]],
     execution_results: dict[str, Any] | None = None,
@@ -299,7 +309,6 @@ def process_telegram_alerts(
     )
 
 
-# Backward-compatible alias if older code imports send_alerts.
 def send_alerts(
     signals: list[dict[str, Any]],
     execution_results: dict[str, Any] | None = None,
