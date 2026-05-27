@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from .config import CONFIG
 from .data import fetch_intraday, fetch_daily, fetch_wide_intraday_batch, wide_scan_rank, data_age_minutes, data_source_name, estimated_spread_pct
@@ -12,6 +13,47 @@ from .indicators import add_indicators
 from .scoring import score_symbol
 from .state import apply_signal_memory, update_open_signal_outcomes, attach_outcome_stats, load_outcomes, load_state, TRACKED_DECISIONS
 from .market_context import build_market_context, symbol_sector_context
+
+# ── Phase 1: data ingestion ──────────────────────────────────────────────────
+from .data_ingestion.s3_partners import enrich_signal_with_s3
+from .data_ingestion.simclusters import SimClustersMonitor
+from .data_ingestion.lunarcrush import LunarCrushFeed
+
+# ── Phase 2: NLP & signal scaling ────────────────────────────────────────────
+from .signals.svc_scaling import svc_allocation_score
+from .signals.vix_scaling import vix_sentiment_scale, fetch_current_vix, vix_regime
+
+# ── Phase 4: aggregation & panel ─────────────────────────────────────────────
+from .aggregation.lightgbm_aggregator import LightGBMAggregator, FEATURE_COLUMNS
+from .agents.multi_agent_panel import MultiAgentPanel
+
+log = logging.getLogger(__name__)
+
+# Module-level singletons initialised once per process
+_simclusters: Optional[SimClustersMonitor] = None
+_lunarcrush: Optional[LunarCrushFeed] = None
+_lgbm: Optional[LightGBMAggregator] = None
+_panel: Optional[MultiAgentPanel] = None
+_cached_vix: Optional[float] = None
+
+
+def _get_singletons(symbols: List[str]):
+    global _simclusters, _lunarcrush, _lgbm, _panel, _cached_vix
+    if _simclusters is None:
+        _simclusters = SimClustersMonitor(
+            symbols=symbols,
+            window_minutes=CONFIG.simcluster_window_minutes,
+            min_velocity_delta=CONFIG.simcluster_min_velocity_delta,
+        )
+    if _lunarcrush is None:
+        _lunarcrush = LunarCrushFeed(symbols=symbols)
+    if _lgbm is None:
+        _lgbm = LightGBMAggregator()
+    if _panel is None:
+        _panel = MultiAgentPanel()
+    # Refresh VIX once per scan run
+    _cached_vix = fetch_current_vix()
+    return _simclusters, _lunarcrush, _lgbm, _panel
 
 
 def market_phase() -> str:
@@ -51,6 +93,11 @@ def scan() -> Dict:
     stale_count = 0
     source = data_source_name()
     context = build_market_context()
+
+    # Initialise Phase 1-4 singletons and pre-fetch bulk social data
+    sim, lc, lgbm, panel = _get_singletons(CONFIG.universe)
+    lc.fetch_all()
+    sim_signals = {s.symbol: s for s in sim.poll()}
 
     # Middle-ground coverage: scan wide with a cheap batch call, then score deep only
     # on the best candidates. This keeps API pressure lower while reducing missed
@@ -133,7 +180,53 @@ def scan() -> Dict:
             signal = score_symbol(symbol, intraday, daily, spread_est, age, source, sector_ctx)
             if age is not None and age > CONFIG.stale_data_minutes:
                 signal["warnings"].append("Data may be stale")
+
             if signal["decision"] != "AVOID":
+                # ── Phase 1: enrich with S3 short-squeeze divergence ──────
+                signal = enrich_signal_with_s3(signal, CONFIG.s3_min_divergence)
+
+                # ── Phase 1: attach LunarCrush social metrics ─────────────
+                signal = lc.enrich_signal(signal)
+
+                # ── Phase 1: SimClusters engagement velocity ──────────────
+                sc = sim_signals.get(symbol)
+                if sc:
+                    signal["simcluster_velocity"] = sc.velocity
+                    signal["simcluster_velocity_delta"] = sc.velocity_delta
+                    signal["simcluster_bridging_score"] = sc.bridging_score
+                    signal["simcluster_bridging"] = sim.is_bridging(symbol)
+
+                # ── Phase 2: VIX-scaled sentiment ─────────────────────────
+                raw_sent = float(signal.get("lc_sentiment", 0.0))
+                signal["vix_scaled_sentiment"] = vix_sentiment_scale(raw_sent, _cached_vix, CONFIG.vix_reference_level)
+                signal["vix_regime"] = vix_regime(_cached_vix)
+
+                # ── Phase 2: Sentiment Volume Change (SVC) ────────────────
+                prev_sent = float(signal.get("prev_lc_sentiment", raw_sent))
+                vol_count = int(signal.get("lc_social_volume", 0))
+                signal["svc_score"] = svc_allocation_score(
+                    prev_sent, raw_sent, vol_count, CONFIG.svc_bias_c
+                )
+
+                # ── Phase 4: LightGBM non-linear aggregation ──────────────
+                features = _build_feature_dict(signal, context)
+                lgbm_result = lgbm.predict(symbol, features)
+                signal["lightgbm_proba"] = lgbm_result.breakout_proba
+                signal["lightgbm_flagged"] = lgbm_result.flagged
+                signal["lgbm_feature_importances"] = lgbm_result.feature_importances
+
+                # ── Phase 4: Multi-agent panel (optional) ─────────────────
+                if lgbm_result.flagged and CONFIG.enable_panel_review:
+                    try:
+                        decision = panel.evaluate(symbol, signal)
+                        signal["panel_verdict"] = decision.final_verdict
+                        signal["panel_confidence"] = decision.consensus_confidence
+                        signal["panel_approved"] = decision.approved_for_execution
+                        signal["panel_summary"] = decision.summary
+                    except Exception as exc:  # noqa: BLE001
+                        log.warning("Panel review failed for %s: %s", symbol, exc)
+                        signal["panel_verdict"] = "ERROR"
+
                 signals.append(signal)
         except Exception as exc:
             errors.append({"symbol": symbol, "error": str(exc)})
@@ -190,7 +283,14 @@ def scan() -> Dict:
             "target1_rate_pct": outcomes.get("stats", {}).get("target1_rate_pct"),
             "avg_pnl_pct_est": outcomes.get("stats", {}).get("avg_pnl_pct_est"),
         },
-        "scanner_mode": "middle-ground: wide scan 150 symbols, deep scan top 40, trade narrow",
+        "scanner_mode": "elite: wide scan 150 → deep 40 → S3/SimClusters/LunarCrush enrichment → MemeBERT-LSTM → LightGBM GOSS/EFB → Multi-Agent Panel",
+        "pipeline_status": {
+            "vix": _cached_vix,
+            "vix_regime": vix_regime(_cached_vix),
+            "lgbm_model_loaded": _lgbm._model is not None if _lgbm else False,
+            "panel_review_enabled": CONFIG.enable_panel_review,
+            "simcluster_symbols_polled": len(sim_signals),
+        },
         "beginner_rules": [
             "BUY SETUP means the scanner found a valid setup, not a guaranteed trade.",
             "WAIT means do not chase; use the better entry or wait for confirmation.",
@@ -202,6 +302,34 @@ def scan() -> Dict:
         "errors": errors[:10],
     }
     return payload
+
+
+def _build_feature_dict(signal: dict, context) -> dict:
+    """Map signal fields onto the LightGBM feature vector."""
+    regime_map = {"LOW_VOL_BULL": 0, "NORMAL": 1, "ELEVATED": 2, "HIGH_FEAR": 3, "CRISIS": 4}
+    return {
+        "rsi14": float(signal.get("rsi14", 50)),
+        "vwap_dist_pct": float(signal.get("vwap_dist_pct", 0)),
+        "atr_pct": float(signal.get("atr_pct", 0)),
+        "rel_vol": float(signal.get("rel_vol", 1)),
+        "ema9_slope": float(signal.get("ema9_slope", 0)),
+        "day_change_pct": float(signal.get("day_change_pct", 0)),
+        "short_momentum": float(signal.get("short_momentum", 0)),
+        "candle_strength": float(signal.get("candle_strength", 0)),
+        "s3_squeeze_risk": float(signal.get("s3_squeeze_risk", 0)),
+        "s3_crowded_score": float(signal.get("s3_crowded_score", 0)),
+        "s3_divergence": float(signal.get("s3_divergence", 0)),
+        "lc_galaxy_score": float(signal.get("lc_galaxy_score", 0)),
+        "lc_sentiment": float(signal.get("lc_sentiment", 0)),
+        "lc_social_volume": float(signal.get("lc_social_volume", 0)),
+        "svc_score": float(signal.get("svc_score", 0)),
+        "simcluster_velocity": float(signal.get("simcluster_velocity", 0)),
+        "simcluster_bridging": float(signal.get("simcluster_bridging_score", 0)),
+        "lstm_signal": float(signal.get("lstm_signal", 0)),
+        "memebert_sentiment": float(signal.get("memebert_sentiment", 0)),
+        "vix_scaled_sentiment": float(signal.get("vix_scaled_sentiment", 0)),
+        "market_regime_code": float(regime_map.get(signal.get("vix_regime", "NORMAL"), 1)),
+    }
 
 
 def write_outputs(payload: Dict) -> None:

@@ -95,6 +95,53 @@ class ScannerConfig:
     # Data freshness warning
     stale_data_minutes: int = 20
 
+    # ------------------------------------------------------------------ #
+    # Phase 1 — data ingestion                                           #
+    # ------------------------------------------------------------------ #
+    # Set to True to open the Alpaca WebSocket feed (requires paid SIP sub)
+    use_alpaca_websocket: bool = False
+    alpaca_use_sip: bool = False  # False = IEX, True = SIP
+    # S3 Partners squeeze divergence minimum gap to trigger
+    s3_min_divergence: float = 0.0
+    # SimClusters: tweets-per-minute acceleration to flag as "bridging"
+    simcluster_min_velocity_delta: float = 2.0
+    simcluster_window_minutes: int = 5
+
+    # ------------------------------------------------------------------ #
+    # Phase 2 — NLP / signals                                            #
+    # ------------------------------------------------------------------ #
+    # VIX calm-market reference level for Sentiment-VIX scaling
+    vix_reference_level: float = 15.0
+    # Non-negative SVC bias constant C; increase to allow slight negative SVC
+    svc_bias_c: float = 0.0
+    # SBERT narrative clustering
+    sbert_n_clusters: int = 8
+    # LSTM sequence length (bars)
+    lstm_seq_len: int = 20
+
+    # ------------------------------------------------------------------ #
+    # Phase 3 — ReAct factor discovery                                   #
+    # ------------------------------------------------------------------ #
+    react_max_iterations: int = 10
+    react_t_stat_hurdle: float = 3.0
+
+    # ------------------------------------------------------------------ #
+    # Phase 4 — LightGBM aggregation & multi-agent panel                 #
+    # ------------------------------------------------------------------ #
+    lgbm_breakout_threshold: float = 0.65
+    panel_min_confidence: float = 0.65
+    # Enable multi-agent panel debate before execution (requires ANTHROPIC_API_KEY)
+    enable_panel_review: bool = False
+
+    # ------------------------------------------------------------------ #
+    # Phase 5 — backtesting                                              #
+    # ------------------------------------------------------------------ #
+    wf_n_folds: int = 5
+    wf_embargo_bars: int = 5
+    wf_expanding: bool = True
+    # Next-day execution fill mode: next_ohlc_avg | next_open | twap_approx
+    execution_fill_mode: str = "next_ohlc_avg"
+
     def __post_init__(self) -> None:
         """Allow GitHub Actions secrets/env vars to tune API pressure safely."""
         int_fields = [
@@ -104,6 +151,11 @@ class ScannerConfig:
             "max_buy_alerts_per_run",
             "max_wait_alerts_per_run",
             "max_new_orders_per_run",
+            "react_max_iterations",
+            "wf_n_folds",
+            "wf_embargo_bars",
+            "sbert_n_clusters",
+            "lstm_seq_len",
         ]
         for field_name in int_fields:
             env_name = field_name.upper()
@@ -113,6 +165,34 @@ class ScannerConfig:
                     setattr(self, field_name, int(value))
                 except ValueError:
                     pass
+
+        float_fields = [
+            "lgbm_breakout_threshold",
+            "panel_min_confidence",
+            "react_t_stat_hurdle",
+            "vix_reference_level",
+            "svc_bias_c",
+            "s3_min_divergence",
+        ]
+        for field_name in float_fields:
+            value = os.getenv(field_name.upper())
+            if value:
+                try:
+                    setattr(self, field_name, float(value))
+                except ValueError:
+                    pass
+
+        bool_fields = [
+            "use_alpaca_websocket",
+            "alpaca_use_sip",
+            "enable_panel_review",
+            "wf_expanding",
+        ]
+        for field_name in bool_fields:
+            value = os.getenv(field_name.upper())
+            if value:
+                setattr(self, field_name, value.lower() in ("1", "true", "yes"))
+
         self.max_symbols = max(self.max_symbols, self.wide_scan_limit)
 
 

@@ -1,4 +1,4 @@
-name: Elite Scanner 100
+name: Elite Scanner — Full Pipeline
 
 on:
   workflow_dispatch:
@@ -35,6 +35,14 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
+      # Phase 1 — data ingestion secrets
+      S3_PARTNERS_API_KEY: ${{ secrets.S3_PARTNERS_API_KEY }}
+      TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
+      LUNARCRUSH_API_KEY: ${{ secrets.LUNARCRUSH_API_KEY }}
+
+      # Phase 3/4 — AI agents
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
       # Repo variables with safe defaults
       MAX_NOTIONAL_PER_TRADE: ${{ vars.MAX_NOTIONAL_PER_TRADE || '2000' }}
       MAX_NEW_ORDERS_PER_RUN: ${{ vars.MAX_NEW_ORDERS_PER_RUN || '1' }}
@@ -44,6 +52,13 @@ jobs:
       MAX_BUY_ALERTS_PER_RUN: ${{ vars.MAX_BUY_ALERTS_PER_RUN || '5' }}
       MAX_WAIT_ALERTS_PER_RUN: ${{ vars.MAX_WAIT_ALERTS_PER_RUN || '3' }}
       MIN_ENTRY_SCORE_FOR_ORDER: ${{ vars.MIN_ENTRY_SCORE_FOR_ORDER || '80' }}
+      # Phase 4 — LightGBM threshold (lower = more signals)
+      LGBM_BREAKOUT_THRESHOLD: ${{ vars.LGBM_BREAKOUT_THRESHOLD || '0.65' }}
+      # Set to 'true' to enable multi-agent panel review (costs Anthropic credits)
+      ENABLE_PANEL_REVIEW: ${{ vars.ENABLE_PANEL_REVIEW || 'false' }}
+      # Phase 5 — walk-forward folds
+      WF_N_FOLDS: ${{ vars.WF_N_FOLDS || '5' }}
+      WF_EMBARGO_BARS: ${{ vars.WF_EMBARGO_BARS || '5' }}
 
     steps:
       - name: Checkout repo
@@ -59,7 +74,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
+            # Heavy ML deps (torch, transformers) are optional; failures are non-fatal
+            pip install -r requirements.txt || pip install -r requirements.txt \
+              --ignore-requires-python \
+              --extra-index-url https://download.pytorch.org/whl/cpu 2>&1 | tail -20
           fi
 
       - name: Run unit tests
