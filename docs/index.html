@@ -3,20 +3,55 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Elite Scanner 100/100</title>
-  <meta name="description" content="Paper-only BUY SETUP scanner dashboard." />
-  <link rel="stylesheet" href="assets/styles.css?v=clean-buy-v1" />
+  <title>Engine2 — Elite Scanner</title>
+  <meta name="description" content="Quantitative scanner: real-time picks, pipeline status, win tracking." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css?v=elite-v2" />
 </head>
-
 <body>
+
+  <!-- ── Sticky top bar ─────────────────────────────────── -->
+  <header id="topbar">
+    <div class="tb-inner">
+      <div class="tb-left">
+        <span class="tb-logo">⚡ Engine2</span>
+        <span class="tb-badge">ELITE SCANNER</span>
+      </div>
+      <div class="tb-center">
+        <div class="ticker-track" id="ticker-track">
+          <div class="ticker-inner" id="ticker-inner">— loading market data —</div>
+        </div>
+      </div>
+      <div class="tb-right">
+        <span id="tb-phase" class="tb-chip">—</span>
+        <span id="tb-vix"   class="tb-chip vix-chip">VIX —</span>
+        <span id="tb-clock" class="tb-clock">—</span>
+        <div id="refresh-ring" title="Auto-refresh every 90 s" class="refresh-ring">
+          <svg width="30" height="30" viewBox="0 0 30 30">
+            <circle cx="15" cy="15" r="11" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+            <circle id="refresh-arc" cx="15" cy="15" r="11" fill="none"
+              stroke="var(--accent)" stroke-width="2.5"
+              stroke-dasharray="69.1 69.1" stroke-dashoffset="0"
+              stroke-linecap="round" transform="rotate(-90 15 15)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main content ───────────────────────────────────── -->
   <main id="app">
-    <section class="loading">
-      <p class="eyebrow">Paper-only research dashboard</p>
-      <h1>Elite Scanner 100/100</h1>
-      <p>Loading BUY SETUP dashboard...</p>
-    </section>
+    <div class="boot-state">
+      <div class="spinner"></div>
+      <p>Fetching scanner data…</p>
+    </div>
   </main>
 
-  <script src="assets/app.js?v=clean-buy-v1"></script>
+  <!-- ── Toast container ───────────────────────────────── -->
+  <div id="toasts"></div>
+
+  <script src="assets/app.js?v=elite-v2"></script>
 </body>
 </html>
