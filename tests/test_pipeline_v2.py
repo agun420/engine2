@@ -389,8 +389,9 @@ def test_point_in_time_mtf_realignment():
 
 def test_react_factor_stub(monkeypatch):
     """ReAct agent produces a valid factor even without LLM credentials."""
-    import src.agents.react_factor_discovery as mod
-    monkeypatch.setattr(mod, "_ANTHROPIC_KEY", "")
+    import src.agents.free_llm as llm_mod
+    monkeypatch.setattr(llm_mod, "_GEMINI_KEY", "")
+    monkeypatch.setattr(llm_mod, "_GROQ_KEY", "")
 
     rng = np.random.default_rng(1)
     dates = pd.date_range("2023-01-01", periods=200, freq="B")
