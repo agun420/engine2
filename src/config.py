@@ -130,7 +130,8 @@ class ScannerConfig:
     # ------------------------------------------------------------------ #
     lgbm_breakout_threshold: float = 0.65
     panel_min_confidence: float = 0.65
-    # Enable multi-agent panel debate before execution (requires ANTHROPIC_API_KEY)
+    # Enable multi-agent panel debate before execution.
+    # Works with GEMINI_API_KEY or GROQ_API_KEY (both free), or rule-based fallback.
     enable_panel_review: bool = False
 
     # ------------------------------------------------------------------ #

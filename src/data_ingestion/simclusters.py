@@ -1,14 +1,21 @@
-"""Phase 1 — X (Twitter) SimClusters engagement-velocity front-running.
+"""Phase 1 — Social engagement velocity (free: Reddit JSON + StockTwits).
 
-X's open-sourced recommendation algorithm groups users into ~145,000 hidden
-"SimClusters."  By tracking engagement velocity within overlapping financial
-clusters rather than the global feed, we can mathematically front-run retail
-narratives as they bridge from a niche cluster into the mainstream algorithm.
+Replaces the paid X/Twitter SimClusters API with two completely free,
+no-auth-required sources:
+
+  • Reddit JSON API  — r/wallstreetbets, r/stocks, r/investing, r/options
+                       (public read endpoint, no OAuth)
+  • StockTwits       — public symbol stream
+                       (https://api.stocktwits.com/api/2/streams/symbol/{sym}.json)
+
+The "bridging" concept is preserved: we track engagement velocity across
+multiple distinct communities (subreddits / StockTwits) and fire when the
+narrative bridges from a single niche into multiple communities simultaneously.
 """
 from __future__ import annotations
 
+import datetime
 import logging
-import os
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
@@ -18,40 +25,31 @@ import requests
 
 log = logging.getLogger(__name__)
 
-_BEARER = os.getenv("TWITTER_BEARER_TOKEN", "")
-_SEARCH_URL = "https://api.twitter.com/2/tweets/search/recent"
-# Approximate SimCluster IDs for known finance communities (illustrative).
-# In production these would be derived from the open-source SimClusters model.
-_FINANCE_CLUSTER_QUERY_TAGS = [
-    "wallstreetbets OR WSB",
-    "stocktwits OR $",
-    "options trading OR unusual options",
-    "short squeeze OR shortinterest",
-    "meme stock OR memestocks",
-]
+_HEADERS = {"User-Agent": "engine2-scanner/1.0 (research-only; contact: github.com/agun420/engine2)"}
+_REDDIT_SEARCH = "https://www.reddit.com/r/{sub}/search.json"
+_STOCKTWITS_URL = "https://api.stocktwits.com/api/2/streams/symbol/{sym}.json"
+
+# The "community clusters" we monitor (analogous to SimClusters)
+_REDDIT_SUBS = ["wallstreetbets", "stocks", "investing", "options", "shortsqueeze"]
 
 
 @dataclass
 class ClusterSignal:
     symbol: str
     cluster_tag: str
-    tweet_count: int        # total tweets in rolling window
-    velocity: float         # tweets per minute in window
-    prev_velocity: float    # velocity in the prior window
-    velocity_delta: float   # acceleration (positive = narrative is accelerating)
-    bridging_score: float   # 0-1: how many distinct clusters mention the ticker
+    tweet_count: int
+    velocity: float
+    prev_velocity: float
+    velocity_delta: float
+    bridging_score: float   # fraction of communities mentioning the ticker
 
 
 @dataclass
 class SimClustersMonitor:
     """
-    Polls the Twitter v2 Search API for a list of tickers across financial
-    SimCluster query tags, computing engagement velocity and acceleration.
-
-    ``window_minutes`` sets the rolling window for velocity calculation.
-    ``min_velocity_delta`` is the acceleration threshold to flag a bridging event.
+    Polls Reddit and StockTwits for a list of tickers, computing engagement
+    velocity and acceleration across multiple community "clusters."
     """
-
     symbols: List[str]
     window_minutes: int = 5
     min_velocity_delta: float = 2.0
@@ -59,81 +57,142 @@ class SimClustersMonitor:
     _history: Dict[str, deque] = field(default_factory=lambda: defaultdict(lambda: deque(maxlen=2)))
 
     def poll(self) -> List[ClusterSignal]:
-        """Fetch engagement metrics for all tracked symbols."""
-        if not _BEARER:
-            log.debug("TWITTER_BEARER_TOKEN not set — SimClusters skipped")
-            return []
-        signals: List[ClusterSignal] = []
-        for symbol in self.symbols:
-            sig = self._poll_symbol(symbol)
+        signals = []
+        for sym in self.symbols:
+            sig = self._poll_symbol(sym)
             if sig:
                 signals.append(sig)
         return signals
 
     def _poll_symbol(self, symbol: str) -> Optional[ClusterSignal]:
-        cluster_counts: Dict[str, int] = {}
-        total_tweets = 0
-        for tag in _FINANCE_CLUSTER_QUERY_TAGS:
-            query = f"${symbol} ({tag}) -is:retweet lang:en"
-            count = self._count_tweets(query)
-            if count:
-                cluster_counts[tag] = count
-                total_tweets += count
+        community_counts: Dict[str, int] = {}
+        total_posts = 0
 
-        if total_tweets == 0:
+        # ── Reddit clusters ────────────────────────────────────────────
+        for sub in _REDDIT_SUBS:
+            count = self._reddit_count(symbol, sub)
+            if count > 0:
+                community_counts[f"r/{sub}"] = count
+                total_posts += count
+            time.sleep(0.15)   # gentle rate limiting
+
+        # ── StockTwits cluster ─────────────────────────────────────────
+        st_count = self._stocktwits_count(symbol)
+        if st_count > 0:
+            community_counts["stocktwits"] = st_count
+            total_posts += st_count
+
+        if total_posts == 0:
             return None
 
-        velocity = total_tweets / self.window_minutes
+        all_communities = len(_REDDIT_SUBS) + 1  # subs + stocktwits
+        velocity = total_posts / max(self.window_minutes, 1)
         hist = self._history[symbol]
         prev_velocity = hist[-1] if hist else 0.0
         hist.append(velocity)
         velocity_delta = velocity - prev_velocity
-        bridging_score = round(len(cluster_counts) / len(_FINANCE_CLUSTER_QUERY_TAGS), 3)
-        top_cluster = max(cluster_counts, key=cluster_counts.get) if cluster_counts else ""
+        bridging_score = round(len(community_counts) / all_communities, 3)
+        top_community = max(community_counts, key=community_counts.get) if community_counts else ""
 
         return ClusterSignal(
             symbol=symbol,
-            cluster_tag=top_cluster,
-            tweet_count=total_tweets,
+            cluster_tag=top_community,
+            tweet_count=total_posts,
             velocity=round(velocity, 2),
             prev_velocity=round(prev_velocity, 2),
             velocity_delta=round(velocity_delta, 2),
             bridging_score=bridging_score,
         )
 
-    def _count_tweets(self, query: str) -> int:
+    def _reddit_count(self, symbol: str, subreddit: str) -> int:
+        """Count Reddit posts mentioning $SYMBOL or SYMBOL in the last hour."""
         try:
             resp = requests.get(
-                _SEARCH_URL,
-                headers={"Authorization": f"Bearer {_BEARER}"},
+                _REDDIT_SEARCH.format(sub=subreddit),
+                headers=_HEADERS,
                 params={
-                    "query": query,
-                    "max_results": 100,
-                    "tweet.fields": "created_at",
-                    "start_time": self._window_start_iso(),
+                    "q": f"${symbol} OR \"{symbol}\"",
+                    "sort": "new",
+                    "limit": 25,
+                    "t": "hour",
+                    "restrict_sr": "on",
                 },
                 timeout=10,
             )
             if resp.status_code == 429:
-                log.warning("Twitter rate limit hit — sleeping 15 s")
-                time.sleep(15)
+                log.debug("Reddit rate limit on r/%s — skipping", subreddit)
                 return 0
             resp.raise_for_status()
-            meta = resp.json().get("meta", {})
-            return int(meta.get("result_count", 0))
+            data = resp.json()
+            posts = data.get("data", {}).get("children", [])
+            # Filter to posts within window_minutes
+            cutoff = time.time() - self.window_minutes * 60
+            recent = [p for p in posts if p.get("data", {}).get("created_utc", 0) >= cutoff]
+            return len(recent)
         except Exception as exc:  # noqa: BLE001
-            log.debug("SimClusters query failed: %s", exc)
+            log.debug("Reddit r/%s error for %s: %s", subreddit, symbol, exc)
             return 0
 
-    def _window_start_iso(self) -> str:
-        import datetime
-        dt = datetime.datetime.utcnow() - datetime.timedelta(minutes=self.window_minutes)
-        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    def _stocktwits_count(self, symbol: str) -> int:
+        """Count recent StockTwits messages for a symbol (public, no auth)."""
+        try:
+            resp = requests.get(
+                _STOCKTWITS_URL.format(sym=symbol),
+                headers=_HEADERS,
+                timeout=10,
+            )
+            if resp.status_code == 429:
+                log.debug("StockTwits rate limit for %s", symbol)
+                return 0
+            resp.raise_for_status()
+            messages = resp.json().get("messages", [])
+            # StockTwits returns last 30 messages; count those within window
+            cutoff = datetime.datetime.utcnow() - datetime.timedelta(minutes=self.window_minutes)
+            recent = []
+            for m in messages:
+                created = m.get("created_at", "")
+                try:
+                    ts = datetime.datetime.strptime(created, "%Y-%m-%dT%H:%M:%SZ")
+                    if ts >= cutoff:
+                        recent.append(m)
+                except ValueError:
+                    pass
+            return len(recent)
+        except Exception as exc:  # noqa: BLE001
+            log.debug("StockTwits error for %s: %s", symbol, exc)
+            return 0
 
     def is_bridging(self, symbol: str) -> bool:
-        """True when latest velocity acceleration exceeds threshold."""
         hist = self._history.get(symbol)
         if not hist or len(hist) < 2:
             return False
-        delta = hist[-1] - hist[-2]
-        return delta >= self.min_velocity_delta
+        return (hist[-1] - hist[-2]) >= self.min_velocity_delta
+
+    def get_stocktwits_sentiment(self, symbol: str) -> Optional[float]:
+        """
+        Return bullish ratio (0-1) from StockTwits sentiment labels.
+        None if insufficient data.
+        """
+        try:
+            resp = requests.get(
+                _STOCKTWITS_URL.format(sym=symbol),
+                headers=_HEADERS,
+                timeout=10,
+            )
+            resp.raise_for_status()
+            messages = resp.json().get("messages", [])
+            bullish = sum(
+                1 for m in messages
+                if (m.get("entities", {}).get("sentiment") or {}).get("basic") == "Bullish"
+            )
+            bearish = sum(
+                1 for m in messages
+                if (m.get("entities", {}).get("sentiment") or {}).get("basic") == "Bearish"
+            )
+            total = bullish + bearish
+            if total == 0:
+                return None
+            return round(bullish / total, 3)
+        except Exception as exc:  # noqa: BLE001
+            log.debug("StockTwits sentiment error for %s: %s", symbol, exc)
+            return None

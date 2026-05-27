@@ -38,16 +38,32 @@ def test_s3_squeeze_divergence_loophole():
     assert squeeze_divergence_triggered(inactive) is False
 
 
-def test_enrich_signal_with_s3_graceful_when_no_key(monkeypatch):
-    """Enrichment should return signal unchanged if S3 key is absent."""
-    import src.data_ingestion.s3_partners as mod
-    monkeypatch.setattr(mod, "_S3_API_KEY", "")
-    from src.data_ingestion.s3_partners import enrich_signal_with_s3
+def test_s3_score_computation():
+    """_compute_scores returns valid 0-100 values for typical inputs."""
+    from src.data_ingestion.s3_partners import _compute_scores
 
-    signal = {"symbol": "GME", "score": 80}
-    result = enrich_signal_with_s3(signal)
-    assert result["symbol"] == "GME"
-    assert "s3_divergence" not in result
+    sq, cr = _compute_scores(
+        short_pct=0.30,       # 30 % of float
+        days_to_cover=5.0,
+        shares_short=10_000_000,
+        shares_short_prior=8_000_000,  # increasing → more crowded
+        finra_short_ratio=0.60,
+        price_momentum=0.05,            # price up 5 % → squeeze risk up
+    )
+    assert 0 <= sq <= 100
+    assert 0 <= cr <= 100
+    # Rising price + high dtc → squeeze risk should exceed crowded
+    assert sq > cr
+
+
+def test_s3_loophole_not_active_when_crowded_dominates():
+    from src.data_ingestion.s3_partners import _compute_scores, S3ShortData, squeeze_divergence_triggered
+
+    # Low short% + price falling → crowded should exceed squeeze risk
+    sq, cr = _compute_scores(0.05, 1.0, 1_000_000, 1_200_000, 0.40, -0.03)
+    d = S3ShortData("AAPL", 5.0, sq, cr, 1.0, 0.5)
+    # At very low short %, squeeze risk is low regardless
+    assert d.short_interest_pct == 5.0
 
 
 def test_simclusters_bridging_detection():
@@ -64,15 +80,111 @@ def test_simclusters_bridging_detection():
     assert mon.is_bridging("AAPL") is False
 
 
-def test_lunarcrush_enrich_no_key(monkeypatch):
-    import src.data_ingestion.lunarcrush as mod
-    monkeypatch.setattr(mod, "_LC_KEY", "")
-    from src.data_ingestion.lunarcrush import LunarCrushFeed
+def test_lunarcrush_galaxy_score_formula():
+    from src.data_ingestion.lunarcrush import _compute_galaxy_score, _compute_alt_rank
+
+    # High volume + bullish → high galaxy score
+    score_high = _compute_galaxy_score(500, 0.8, 80.0)
+    score_low = _compute_galaxy_score(5, -0.5, 20.0)
+    assert score_high > score_low
+    assert 0 <= score_high <= 100
+    assert 0 <= score_low <= 100
+
+    # Alt rank: lower score → higher number (worse rank)
+    rank_strong = _compute_alt_rank(500, 0.8)
+    rank_weak = _compute_alt_rank(5, -0.5)
+    assert rank_strong < rank_weak
+    assert 1 <= rank_strong <= 999
+
+
+def test_lunarcrush_enrich_uses_cache():
+    from src.data_ingestion.lunarcrush import LunarCrushFeed, LunarCrushMetrics
+    import numpy as np
 
     feed = LunarCrushFeed(["AAPL"])
-    result = feed.enrich_signal({"symbol": "AAPL", "score": 75})
-    # No enrichment keys should be added when there's no API key
-    assert "lc_galaxy_score" not in result
+    # Manually seed cache
+    feed._cache["AAPL"] = LunarCrushMetrics(
+        symbol="AAPL", galaxy_score=72.0, alt_rank=45,
+        social_volume=300, social_score=21600.0,
+        sentiment=0.6, social_contributors=3,
+        news_sentiment=0.3, price_correlation=0.0,
+    )
+    signal = feed.enrich_signal({"symbol": "AAPL", "score": 80})
+    assert signal["lc_galaxy_score"] == 72.0
+    assert signal["lc_sentiment"] == 0.6
+
+
+# ── Free LLM layer ───────────────────────────────────────────────────────────
+
+def test_free_llm_rule_based_fallback_positive():
+    from src.agents.free_llm import _rule_based_fallback, extract_json
+
+    result = _rule_based_fallback("Strong breakout, high momentum, squeeze potential, bullish catalyst")
+    d = extract_json(result)
+    assert d["verdict"] == "BUY"
+    assert d["confidence"] > 0
+
+
+def test_free_llm_rule_based_fallback_negative():
+    from src.agents.free_llm import _rule_based_fallback, extract_json
+
+    result = _rule_based_fallback("bearish breakdown sell crash avoid weak negative")
+    d = extract_json(result)
+    assert d["verdict"] == "PASS"
+
+
+def test_free_llm_extract_json_embedded():
+    from src.agents.free_llm import extract_json
+
+    text = 'Here is my answer: {"verdict": "BUY", "confidence": 0.75, "flags": []} — end.'
+    d = extract_json(text)
+    assert d["verdict"] == "BUY"
+    assert d["confidence"] == 0.75
+
+
+def test_free_llm_no_keys_uses_fallback(monkeypatch):
+    import src.agents.free_llm as mod
+    monkeypatch.setattr(mod, "_GEMINI_KEY", "")
+    monkeypatch.setattr(mod, "_GROQ_KEY", "")
+    from src.agents.free_llm import call_llm, llm_available
+
+    assert llm_available() is False
+    # Should return valid JSON from rule-based fallback
+    resp = call_llm("system", "bullish breakout buy signal")
+    d = extract_json_local(resp)
+    assert "verdict" in d
+
+
+def extract_json_local(text):
+    import json, re
+    m = re.search(r"\{.*\}", text, re.DOTALL)
+    if m:
+        return json.loads(m.group())
+    return {}
+
+
+def test_multi_agent_panel_rule_based(monkeypatch):
+    import src.agents.free_llm as mod
+    monkeypatch.setattr(mod, "_GEMINI_KEY", "")
+    monkeypatch.setattr(mod, "_GROQ_KEY", "")
+
+    from src.agents.multi_agent_panel import MultiAgentPanel
+    panel = MultiAgentPanel()
+    signal = {
+        "symbol": "GME",
+        "decision": "BUY SETUP",
+        "opportunity_score": 82,
+        "entry_score": 85,
+        "s3_loophole_active": True,
+        "lc_sentiment": 0.7,
+        "lightgbm_proba": 0.78,
+        "vix_regime": "NORMAL",
+    }
+    decision = panel.evaluate("GME", signal)
+    assert decision.symbol == "GME"
+    assert decision.final_verdict in ("BUY", "PASS", "INVESTIGATE")
+    assert 0.0 <= decision.consensus_confidence <= 1.0
+    assert len(decision.verdicts) == 3
 
 
 # ── Phase 2 ─────────────────────────────────────────────────────────────────

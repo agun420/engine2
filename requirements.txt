@@ -6,14 +6,20 @@ pytz>=2024.1
 pytest>=8.0.0
 PyYAML>=6.0.1
 alpaca-py>=0.28.0
-# Phase 1 — data ingestion
+# Phase 1 — real-time WebSocket feed
 websockets>=12.0
-# Phase 2 — NLP
+# Phase 2 — NLP (optional; graceful fallback when absent)
 transformers>=4.40.0
 sentence-transformers>=3.0.0
-# Phase 3/4 — agents & aggregation
-anthropic>=0.28.0
+# Phase 3/4 — aggregation & backtesting
 lightgbm>=4.3.0
 scipy>=1.13.0
-# Phase 2 — LSTM (optional GPU support)
+# Phase 3/4 — free LLM clients (no paid key required)
+# Gemini free tier: pip install google-generativeai
+# Groq   free tier: pip install groq
+# Both are optional; rule-based fallback is always active.
+# Uncomment below if you want the SDK wrappers instead of raw requests:
+# google-generativeai>=0.5.0
+# groq>=0.5.0
+# Phase 2 — LSTM (optional; numpy fallback active when torch absent)
 torch>=2.2.0; sys_platform != "win32" or python_version >= "3.9"

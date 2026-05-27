@@ -14,36 +14,39 @@ permissions:
   contents: write
 
 concurrency:
-  group: elite-scanner-100
+  group: elite-scanner-full-pipeline
   cancel-in-progress: true
 
 jobs:
   run-scanner:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
 
     env:
       PYTHONPATH: .
       TZ: America/New_York
 
-      # Alpaca paper trading secrets
+      # ── Alpaca paper trading (existing) ───────────────────────────────
       ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
       ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
       AUTO_PAPER_TRADE: ${{ secrets.AUTO_PAPER_TRADE }}
 
-      # Telegram secrets
+      # ── Telegram alerts (existing) ────────────────────────────────────
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
-      # Phase 1 — data ingestion secrets
-      S3_PARTNERS_API_KEY: ${{ secrets.S3_PARTNERS_API_KEY }}
-      TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
-      LUNARCRUSH_API_KEY: ${{ secrets.LUNARCRUSH_API_KEY }}
+      # ── Phase 3/4 — Free LLM (pick ONE, both are free to sign up) ────
+      # Option A: Google Gemini 1.5 Flash
+      #   Free tier: 1,500 req/day, 15 RPM, 1M tokens/min
+      #   Get key:  https://aistudio.google.com/app/apikey  (free, no card)
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      # Option B: Groq (llama3-8b-8192)
+      #   Free tier: generous rate limits, no daily cap
+      #   Get key:  https://console.groq.com/  (free, no card)
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      # If NEITHER key is set the panel uses a rule-based fallback — still works.
 
-      # Phase 3/4 — AI agents
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-
-      # Repo variables with safe defaults
+      # ── Repo variables with safe defaults ─────────────────────────────
       MAX_NOTIONAL_PER_TRADE: ${{ vars.MAX_NOTIONAL_PER_TRADE || '2000' }}
       MAX_NEW_ORDERS_PER_RUN: ${{ vars.MAX_NEW_ORDERS_PER_RUN || '1' }}
       WIDE_SCAN_LIMIT: ${{ vars.WIDE_SCAN_LIMIT || '150' }}
@@ -52,13 +55,15 @@ jobs:
       MAX_BUY_ALERTS_PER_RUN: ${{ vars.MAX_BUY_ALERTS_PER_RUN || '5' }}
       MAX_WAIT_ALERTS_PER_RUN: ${{ vars.MAX_WAIT_ALERTS_PER_RUN || '3' }}
       MIN_ENTRY_SCORE_FOR_ORDER: ${{ vars.MIN_ENTRY_SCORE_FOR_ORDER || '80' }}
-      # Phase 4 — LightGBM threshold (lower = more signals)
+      # Phase 4 — LightGBM breakout threshold (0.65 default; lower = more signals)
       LGBM_BREAKOUT_THRESHOLD: ${{ vars.LGBM_BREAKOUT_THRESHOLD || '0.65' }}
-      # Set to 'true' to enable multi-agent panel review (costs Anthropic credits)
+      # Multi-agent panel: 'true' to enable (uses free Gemini/Groq, or rule-based)
       ENABLE_PANEL_REVIEW: ${{ vars.ENABLE_PANEL_REVIEW || 'false' }}
-      # Phase 5 — walk-forward folds
+      # Phase 5 — walk-forward backtesting
       WF_N_FOLDS: ${{ vars.WF_N_FOLDS || '5' }}
       WF_EMBARGO_BARS: ${{ vars.WF_EMBARGO_BARS || '5' }}
+      # Phase 1 — SimClusters velocity threshold
+      SIMCLUSTER_MIN_VELOCITY_DELTA: ${{ vars.SIMCLUSTER_MIN_VELOCITY_DELTA || '2.0' }}
 
     steps:
       - name: Checkout repo
@@ -73,12 +78,13 @@ jobs:
       - name: Install package requirements
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            # Heavy ML deps (torch, transformers) are optional; failures are non-fatal
-            pip install -r requirements.txt || pip install -r requirements.txt \
-              --ignore-requires-python \
-              --extra-index-url https://download.pytorch.org/whl/cpu 2>&1 | tail -20
-          fi
+          # Core deps always installed; heavy ML (torch, transformers) are optional.
+          # If torch wheel is unavailable for this runner, fall back to CPU-only.
+          pip install -r requirements.txt \
+            --extra-index-url https://download.pytorch.org/whl/cpu \
+            || pip install pandas numpy yfinance requests pytz pytest PyYAML \
+                         alpaca-py websockets lightgbm scipy \
+                         transformers sentence-transformers
 
       - name: Run unit tests
         run: |
