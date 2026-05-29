@@ -1,11 +1,19 @@
 from __future__ import annotations
 
 import logging
+import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
 from pathlib import Path
 from typing import List, Dict, Optional
+
+# FAST_MODE skips the slow external social/short enrichment phases
+# (LunarCrush Reddit/StockTwits, SimClusters, S3/FINRA) that rate-limit
+# datacenter IPs and serialize into 10+ minute runs. The core BUY/WAIT/AVOID
+# decision from score_symbol() is unaffected. Set ENGINE2_FAST_MODE=1 (the
+# consensus aggregator sets this automatically).
+FAST_MODE = os.getenv("ENGINE2_FAST_MODE", "").strip().lower() in ("1", "true", "yes", "on")
 
 from .config import CONFIG
 from .data import fetch_intraday, fetch_daily, fetch_wide_intraday_batch, wide_scan_rank, data_age_minutes, data_source_name, estimated_spread_pct
@@ -96,8 +104,12 @@ def scan() -> Dict:
 
     # Initialise Phase 1-4 singletons and pre-fetch bulk social data
     sim, lc, lgbm, panel = _get_singletons(CONFIG.universe)
-    lc.fetch_all()
-    sim_signals = {s.symbol: s for s in sim.poll()}
+    if FAST_MODE:
+        log.info("FAST_MODE: skipping LunarCrush/SimClusters bulk social fetch")
+        sim_signals = {}
+    else:
+        lc.fetch_all()
+        sim_signals = {s.symbol: s for s in sim.poll()}
 
     # Middle-ground coverage: scan wide with a cheap batch call, then score deep only
     # on the best candidates. This keeps API pressure lower while reducing missed
@@ -182,11 +194,12 @@ def scan() -> Dict:
                 signal["warnings"].append("Data may be stale")
 
             if signal["decision"] != "AVOID":
-                # ── Phase 1: enrich with S3 short-squeeze divergence ──────
-                signal = enrich_signal_with_s3(signal, CONFIG.s3_min_divergence)
+                if not FAST_MODE:
+                    # ── Phase 1: enrich with S3 short-squeeze divergence ──────
+                    signal = enrich_signal_with_s3(signal, CONFIG.s3_min_divergence)
 
-                # ── Phase 1: attach LunarCrush social metrics ─────────────
-                signal = lc.enrich_signal(signal)
+                    # ── Phase 1: attach LunarCrush social metrics ─────────────
+                    signal = lc.enrich_signal(signal)
 
                 # ── Phase 1: SimClusters engagement velocity ──────────────
                 sc = sim_signals.get(symbol)
