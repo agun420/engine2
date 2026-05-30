@@ -234,12 +234,12 @@ function renderPipeline(payload) {
   const mode = payload.scanner_mode || "";
 
   const phases = [
-    { label: "Phase 1 · Data", on: true,                               tip: "yfinance · FINRA · Reddit · StockTwits · Fear&Greed" },
-    { label: "Phase 2 · NLP",  on: mode.includes("MemeBERT"),          tip: "MemeBERT-LSTM temporal fusion" },
-    { label: "Phase 3 · ReAct", on: false,                             tip: "Autonomous factor discovery (runs offline)" },
-    { label: "Phase 4 · LightGBM", on: pip.lgbm_model_loaded === true, tip: "GOSS+EFB aggregation" },
-    { label: "Phase 4 · Panel", on: pip.panel_review_enabled === true,  tip: "Multi-agent consensus" },
-    { label: "Phase 5 · Backtest", on: false,                          tip: "Purged walk-forward (offline)" },
+    { label: "Phase 1 · Data",      on: true,                                tip: "yfinance · FINRA · Reddit · StockTwits · Fear&Greed" },
+    { label: "Phase 2 · NLP",       on: mode.includes("MemeBERT"),           tip: "MemeBERT-LSTM temporal fusion" },
+    { label: "Phase 3 · ReAct",     on: pip.react_factors_loaded === true,   tip: "Autonomous factor discovery — friction-adjusted flow shock + t-stat ≥ 3.0 hurdle" },
+    { label: "Phase 4 · LightGBM",  on: pip.lgbm_model_loaded === true,      tip: pip.lgbm_trained_model ? "GOSS+EFB trained model active" : "GOSS+EFB aggregator active (heuristic mode — training on first 30 signals)" },
+    { label: "Phase 4 · Panel",     on: pip.panel_review_enabled === true,   tip: "Multi-agent consensus: WebResearch · Institutional · CrossCheck" },
+    { label: "Phase 5 · Backtest",  on: pip.backtest_completed === true,     tip: "Purged walk-forward · 5-fold embargo · deflated Sharpe validation" },
   ];
 
   return `

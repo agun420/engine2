@@ -300,8 +300,15 @@ def scan() -> Dict:
         "pipeline_status": {
             "vix": _cached_vix,
             "vix_regime": vix_regime(_cached_vix),
-            "lgbm_model_loaded": _lgbm._model is not None if _lgbm else False,
+            # True whenever the aggregator is active (trained model OR heuristic fallback)
+            "lgbm_model_loaded": _lgbm is not None,
+            # True only when a trained pkl exists (bonus info for tooltip)
+            "lgbm_trained_model": _lgbm._model is not None if _lgbm else False,
             "panel_review_enabled": CONFIG.enable_panel_review,
+            # Phase 3 — ReAct: active once factor discovery has run at least once
+            "react_factors_loaded": Path("state/react_factors.json").exists(),
+            # Phase 5 — Backtest: active once walk-forward has completed
+            "backtest_completed": Path("state/backtest_results.json").exists(),
             "simcluster_symbols_polled": len(sim_signals),
         },
         "beginner_rules": [

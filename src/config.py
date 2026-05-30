@@ -132,7 +132,8 @@ class ScannerConfig:
     panel_min_confidence: float = 0.65
     # Enable multi-agent panel debate before execution.
     # Works with GEMINI_API_KEY or GROQ_API_KEY (both free), or rule-based fallback.
-    enable_panel_review: bool = False
+    # Enabled by default — fallback runs without any API key.
+    enable_panel_review: bool = True
 
     # ------------------------------------------------------------------ #
     # Phase 5 — backtesting                                              #
