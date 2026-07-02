@@ -1,12 +1,12 @@
 {
   "api_budget": {
-    "active_tracked_symbols": 20,
+    "active_tracked_symbols": 25,
     "deep_scan_limit": 40,
     "deep_symbols_selected": 44,
     "estimated_data_calls": 89,
     "max_data_calls_per_run": 90,
     "mode": "middle_ground",
-    "status": "OK",
+    "status": "TRIMMED_TO_BUDGET",
     "stop_on_rate_limit": true,
     "wide_scan_limit": 150,
     "wide_symbols_requested": 150,
@@ -19,37 +19,37 @@
     "Target 1 is the first profit zone. Target 2 is stretch target.",
     "Paper-test first. Do not use this as live financial advice."
   ],
-  "data_health": "OK",
+  "data_health": "STALE WARNING",
   "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
   "errors": [],
   "market_context": {
     "etf_changes": {
-      "BITQ": -4.26,
-      "CIBR": 1.05,
-      "IGV": 4.09,
-      "IWM": -1.44,
-      "IYT": 0.72,
-      "KWEB": 1.26,
-      "PEJ": 0.54,
-      "QQQ": -3.42,
-      "QTUM": -6.25,
-      "SMH": -10.45,
-      "SPY": -0.54,
-      "XLC": 1.82,
-      "XLF": 3.31,
-      "XLK": -5.48,
-      "XLP": 1.67,
-      "XLY": -0.17
+      "BITQ": -4.1,
+      "CIBR": 0.32,
+      "IGV": 1.28,
+      "IWM": -0.81,
+      "IYT": 1.24,
+      "KWEB": 2.48,
+      "PEJ": 0.9,
+      "QQQ": -3.13,
+      "QTUM": -4.01,
+      "SMH": -7.64,
+      "SPY": -0.06,
+      "XLC": 0.55,
+      "XLF": 3.33,
+      "XLK": -5.05,
+      "XLP": 2.29,
+      "XLY": -0.68
     },
-    "iwm_change_pct": -1.44,
+    "iwm_change_pct": -0.81,
     "market_regime": "RISK-OFF",
-    "qqq_change_pct": -3.42,
+    "qqq_change_pct": -3.13,
     "risk_note": "Broad market is weak. Require stronger confirmation and smaller risk.",
-    "spy_change_pct": -0.54
+    "spy_change_pct": -0.06
   },
-  "market_phase": "AFTERNOON TREND CHECK",
+  "market_phase": "MARKET CLOSED",
   "paper_only": true,
-  "phase_warning": "Normal research mode. Confirm chart before acting.",
+  "phase_warning": "Market is not in regular session. Treat signals as watchlist only.",
   "pipeline_status": {
     "backtest_completed": true,
     "lgbm_model_loaded": true,
@@ -57,7 +57,7 @@
     "panel_review_enabled": true,
     "react_factors_loaded": true,
     "simcluster_symbols_polled": 0,
-    "vix": 16.56999969482422,
+    "vix": 16.190000534057617,
     "vix_regime": "NORMAL"
   },
   "scanner_mode": "elite: wide scan 150 \u2192 deep 40 \u2192 S3/SimClusters/LunarCrush enrichment \u2192 MemeBERT-LSTM \u2192 LightGBM GOSS/EFB \u2192 Multi-Agent Panel",
@@ -65,9 +65,9 @@
   "schema_version": "1.0.0",
   "signals": [
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $113.03 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $112.40 or higher target confirmation.",
       "advanced_breakdown": {
-        "composite": 77,
+        "composite": 75,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -87,12 +87,12 @@
           "relative_strength": {
             "grade": "A",
             "notes": [
-              "strong intraday relative move",
+              "positive intraday relative move",
               "sector beating SPY",
               "above short trend",
               "move has volume support"
             ],
-            "score": 100
+            "score": 88
           },
           "risk_quality": {
             "grade": "B",
@@ -114,71 +114,67 @@
             "score": 54
           },
           "technical": {
-            "grade": "B",
+            "grade": "C",
             "notes": [
               "above VWAP",
               "above EMA9",
               "above EMA20",
-              "RSI healthy"
+              "RSI weak/neutral"
             ],
-            "score": 80
+            "score": 70
           },
           "volume_liquidity": {
             "grade": "A",
             "notes": [
-              "volume expansion",
+              "strong volume expansion",
               "high dollar volume",
               "spread/range acceptable"
             ],
-            "score": 90
+            "score": 100
           }
         },
         "grade": "B",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.47,
+      "atr_pct": 0.48,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
       "confidence_label": "HIGH",
-      "data_age_minutes": 17.0,
+      "data_age_minutes": 35.3,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 8.33,
+      "day_change_pct": 4.79,
       "decision": "WAIT",
-      "dollar_volume": 113223225.8,
-      "ema9_distance_pct": 0.42,
-      "entry_score": 94,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 113460282.29,
+      "ema9_distance_pct": 0.05,
+      "entry_score": 84,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 113.03,
-        "entry": 113.34,
-        "invalidation": 110.53,
-        "risk_reward": 0.12,
-        "stop": 110.53,
-        "target1": 113.69,
-        "target1_source": "recent high",
-        "target2": 113.91,
-        "target2_source": "ATR extension"
+        "better_entry": 112.4,
+        "entry": 112.71,
+        "invalidation": 111.19,
+        "risk_reward": 0.37,
+        "stop": 111.19,
+        "target1": 113.27,
+        "target1_source": "ATR extension",
+        "target2": 113.3,
+        "target2_source": "recent high"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": true,
-      "lightgbm_proba": 0.6864,
-      "opportunity_score": 100,
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.5802,
+      "opportunity_score": 94,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
+        "global_target1_rate_pct": 41.6,
         "symbol_sample_size": 7,
         "symbol_target1_rate_pct": 42.9
       },
-      "panel_approved": false,
-      "panel_confidence": 0.5,
-      "panel_summary": "",
-      "panel_verdict": "PASS",
       "previous_status": null,
-      "price": 113.34,
+      "price": 112.71,
       "reasons": [
         "Positive intraday move",
         "Strong momentum",
@@ -186,335 +182,39 @@
         "Above VWAP",
         "Above EMA20",
         "Liquid enough",
-        "RSI in healthy zone",
-        "Daily trend supportive"
+        "Daily trend supportive",
+        "Tradable range/spread estimate"
       ],
       "s3_borrow_rate_pct": 3.69,
       "s3_crowded_score": 5.72,
       "s3_days_to_cover": 1.25,
-      "s3_divergence": 19.76,
+      "s3_divergence": 12.68,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 25.48,
+      "s3_squeeze_risk": 18.4,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": 3.31,
+        "sector_change_pct": 3.33,
         "sector_etf": "XLF",
-        "sector_vs_spy_pct": 3.85
+        "sector_vs_spy_pct": 3.39
       },
-      "spread_pct_est": 0.503,
+      "spread_pct_est": 0.523,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
       "symbol": "HOOD",
       "tradeability": "OK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.98,
-      "vwap_distance_pct": 1.97,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $18.51 or higher target confirmation.",
-      "advanced_breakdown": {
-        "composite": 65,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "C",
-            "notes": [
-              "near valid VWAP extension"
-            ],
-            "score": 74
-          },
-          "relative_strength": {
-            "grade": "C",
-            "notes": [
-              "strong intraday relative move",
-              "sector inline/slightly ahead",
-              "move has volume support"
-            ],
-            "score": 74
-          },
-          "risk_quality": {
-            "grade": "B",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak"
-            ],
-            "score": 84
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF XLY",
-              "sector leading SPY"
-            ],
-            "score": 42
-          },
-          "technical": {
-            "grade": "F",
-            "notes": [
-              "above VWAP",
-              "RSI healthy"
-            ],
-            "score": 44
-          },
-          "volume_liquidity": {
-            "grade": "A",
-            "notes": [
-              "strong volume expansion",
-              "liquid enough",
-              "spread/range acceptable"
-            ],
-            "score": 90
-          }
-        },
-        "grade": "C",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.45,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.4,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 6.63,
-      "decision": "WAIT",
-      "dollar_volume": 26662635.29,
-      "ema9_distance_pct": -0.4,
-      "entry_score": 80,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 18.51,
-        "entry": 18.57,
-        "invalidation": 18.31,
-        "risk_reward": 0.37,
-        "stop": 18.31,
-        "target1": 18.66,
-        "target1_source": "ATR extension",
-        "target2": 18.73,
-        "target2_source": "stretch ATR extension"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": true,
-      "lightgbm_proba": 0.7414,
-      "opportunity_score": 87,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 11,
-        "symbol_target1_rate_pct": 54.5
-      },
-      "panel_approved": false,
-      "panel_confidence": 0.5,
-      "panel_summary": "",
-      "panel_verdict": "PASS",
-      "previous_status": null,
-      "price": 18.57,
-      "reasons": [
-        "Positive intraday move",
-        "Strong momentum",
-        "Volume expansion",
-        "Above VWAP",
-        "Liquid enough",
-        "RSI in healthy zone",
-        "Daily trend supportive",
-        "Tradable range/spread estimate"
-      ],
-      "s3_borrow_rate_pct": 6.15,
-      "s3_crowded_score": 19.22,
-      "s3_days_to_cover": 4.43,
-      "s3_divergence": 23.43,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 42.65,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.17,
-        "sector_etf": "XLY",
-        "sector_vs_spy_pct": 0.37
-      },
-      "spread_pct_est": 0.377,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "RIVN",
-      "tradeability": "OK",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 4.13,
+      "volume_ratio": 3.06,
       "vwap_distance_pct": 0.81,
       "warnings": [
         "Market regime is risk-off; be more selective",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Do not chase. Better entry is near $77.83; invalid below $74.22.",
-      "advanced_breakdown": {
-        "composite": 61,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "F",
-            "notes": [
-              "too far above VWAP"
-            ],
-            "score": 28
-          },
-          "relative_strength": {
-            "grade": "B",
-            "notes": [
-              "strong intraday relative move",
-              "sector beating SPY",
-              "move has volume support"
-            ],
-            "score": 82
-          },
-          "risk_quality": {
-            "grade": "A",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak",
-              "tradeability strong"
-            ],
-            "score": 92
-          },
-          "sector_market": {
-            "grade": "D",
-            "notes": [
-              "market risk-off",
-              "sector ETF XLC",
-              "sector positive",
-              "sector leading SPY"
-            ],
-            "score": 54
-          },
-          "technical": {
-            "grade": "F",
-            "notes": [
-              "above VWAP",
-              "RSI weak/neutral"
-            ],
-            "score": 34
-          },
-          "volume_liquidity": {
-            "grade": "A",
-            "notes": [
-              "volume expansion",
-              "high dollar volume",
-              "spread/range acceptable"
-            ],
-            "score": 90
-          }
-        },
-        "grade": "C",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.21,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM",
-      "data_age_minutes": 17.1,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 7.36,
-      "decision": "WAIT",
-      "dollar_volume": 271318066.45,
-      "ema9_distance_pct": -0.21,
-      "entry_score": 50,
-      "first_seen": "2026-07-02T17:45:27.085679+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 77.83,
-        "entry": 78.04,
-        "invalidation": 74.22,
-        "risk_reward": 0.1,
-        "stop": 74.22,
-        "target1": 78.43,
-        "target1_source": "ATR extension",
-        "target2": 78.44,
-        "target2_source": "recent high"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": true,
-      "lightgbm_proba": 0.7533,
-      "opportunity_score": 84,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 2,
-        "symbol_target1_rate_pct": 50.0
-      },
-      "panel_approved": false,
-      "panel_confidence": 0.5,
-      "panel_summary": "",
-      "panel_verdict": "PASS",
-      "previous_status": "WEAK RISK/REWARD",
-      "price": 78.04,
-      "reasons": [
-        "Positive intraday move",
-        "Strong momentum",
-        "Volume expansion",
-        "Above VWAP",
-        "Liquid enough",
-        "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Sector/theme is positive"
-      ],
-      "s3_borrow_rate_pct": 3.1,
-      "s3_crowded_score": 4.43,
-      "s3_days_to_cover": 3.0,
-      "s3_divergence": 24.22,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 28.65,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": 1.82,
-        "sector_etf": "XLC",
-        "sector_vs_spy_pct": 2.36
-      },
-      "spread_pct_est": 0.275,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "NFLX",
-      "tradeability": "STRONG",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.34,
-      "vwap_distance_pct": 4.54,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "Too extended above VWAP",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $120.38 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $225.75 or higher target confirmation.",
       "advanced_breakdown": {
         "composite": 76,
         "factors": {
@@ -537,12 +237,12 @@
           "relative_strength": {
             "grade": "B",
             "notes": [
-              "slightly positive",
-              "sector beating SPY",
+              "positive intraday relative move",
+              "sector inline/slightly ahead",
               "above short trend",
               "move has volume support"
             ],
-            "score": 76
+            "score": 80
           },
           "risk_quality": {
             "grade": "B",
@@ -554,14 +254,12 @@
             "score": 84
           },
           "sector_market": {
-            "grade": "D",
+            "grade": "F",
             "notes": [
               "market risk-off",
-              "sector ETF IGV",
-              "sector positive",
-              "sector leading SPY"
+              "sector ETF SPY"
             ],
-            "score": 54
+            "score": 32
           },
           "technical": {
             "grade": "A",
@@ -569,165 +267,15 @@
               "above VWAP",
               "above EMA9",
               "above EMA20",
-              "RSI hot"
+              "RSI healthy"
             ],
-            "score": 86
+            "score": 100
           },
           "volume_liquidity": {
             "grade": "A",
             "notes": [
               "strong volume expansion",
               "liquid enough",
-              "spread/range acceptable"
-            ],
-            "score": 90
-          }
-        },
-        "grade": "B",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.21,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "HIGH",
-      "data_age_minutes": 17.2,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 1.13,
-      "decision": "WAIT",
-      "dollar_volume": 43266085.3,
-      "ema9_distance_pct": 0.32,
-      "entry_score": 94,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 120.38,
-        "entry": 120.71,
-        "invalidation": 119.23,
-        "risk_reward": 0.41,
-        "stop": 119.23,
-        "target1": 121.31,
-        "target1_source": "ATR extension",
-        "target2": 121.63,
-        "target2_source": "prior close/gap fill"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": false,
-      "lightgbm_proba": 0.5496,
-      "opportunity_score": 82,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 14,
-        "symbol_target1_rate_pct": 35.7
-      },
-      "previous_status": null,
-      "price": 120.71,
-      "reasons": [
-        "Positive intraday move",
-        "Volume expansion",
-        "Above VWAP",
-        "Above EMA20",
-        "Liquid enough",
-        "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Sector/theme is positive"
-      ],
-      "s3_borrow_rate_pct": 2.93,
-      "s3_crowded_score": 2.08,
-      "s3_days_to_cover": 2.27,
-      "s3_divergence": 10.64,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 12.72,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": 4.09,
-        "sector_etf": "IGV",
-        "sector_vs_spy_pct": 4.63
-      },
-      "spread_pct_est": 0.36,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "SHOP",
-      "tradeability": "OK",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 2.81,
-      "vwap_distance_pct": 0.68,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "RSI is overheated",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $73.85 or higher target confirmation.",
-      "advanced_breakdown": {
-        "composite": 76,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "A",
-            "notes": [
-              "near valid VWAP extension",
-              "breakout timing",
-              "holding EMA9"
-            ],
-            "score": 100
-          },
-          "relative_strength": {
-            "grade": "B",
-            "notes": [
-              "slightly positive",
-              "sector beating SPY",
-              "above short trend",
-              "move has volume support"
-            ],
-            "score": 76
-          },
-          "risk_quality": {
-            "grade": "B",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak"
-            ],
-            "score": 84
-          },
-          "sector_market": {
-            "grade": "D",
-            "notes": [
-              "market risk-off",
-              "sector ETF IYT",
-              "sector positive",
-              "sector leading SPY"
-            ],
-            "score": 54
-          },
-          "technical": {
-            "grade": "A",
-            "notes": [
-              "above VWAP",
-              "above EMA9",
-              "above EMA20",
-              "RSI hot"
-            ],
-            "score": 86
-          },
-          "volume_liquidity": {
-            "grade": "A",
-            "notes": [
-              "volume expansion",
-              "high dollar volume",
               "spread/range acceptable"
             ],
             "score": 90
@@ -740,228 +288,81 @@
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
       "confidence_label": "HIGH",
-      "data_age_minutes": 17.3,
+      "data_age_minutes": 36.0,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 1.96,
+      "day_change_pct": 4.41,
       "decision": "WAIT",
-      "dollar_volume": 107442195.86,
-      "ema9_distance_pct": 0.34,
-      "entry_score": 94,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 47529460.13,
+      "ema9_distance_pct": 0.26,
+      "entry_score": 100,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 73.85,
-        "entry": 74.05,
-        "invalidation": 72.38,
+        "better_entry": 225.75,
+        "entry": 226.37,
+        "invalidation": 221.36,
         "risk_reward": 0.22,
-        "stop": 72.38,
-        "target1": 74.42,
-        "target1_source": "ATR extension",
-        "target2": 74.7,
-        "target2_source": "stretch ATR extension"
+        "stop": 221.36,
+        "target1": 227.47,
+        "target1_source": "day high",
+        "target2": 227.5,
+        "target2_source": "ATR extension"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": false,
-      "lightgbm_proba": 0.591,
-      "opportunity_score": 82,
+      "lightgbm_proba": 0.5235,
+      "opportunity_score": 92,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 11,
-        "symbol_target1_rate_pct": 36.4
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 0,
+        "symbol_target1_rate_pct": null
       },
       "previous_status": null,
-      "price": 74.05,
-      "reasons": [
-        "Positive intraday move",
-        "Volume expansion",
-        "Above VWAP",
-        "Above EMA20",
-        "Liquid enough",
-        "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Sector/theme is positive"
-      ],
-      "s3_borrow_rate_pct": 3.2,
-      "s3_crowded_score": 3.37,
-      "s3_days_to_cover": 2.65,
-      "s3_divergence": 13.4,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 16.77,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": 0.72,
-        "sector_etf": "IYT",
-        "sector_vs_spy_pct": 1.26
-      },
-      "spread_pct_est": 0.371,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "UBER",
-      "tradeability": "OK",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.54,
-      "vwap_distance_pct": 1.74,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "RSI is overheated",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $358.11 or higher target confirmation.",
-      "advanced_breakdown": {
-        "composite": 63,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "C",
-            "notes": [
-              "near valid VWAP extension"
-            ],
-            "score": 74
-          },
-          "relative_strength": {
-            "grade": "C",
-            "notes": [
-              "positive intraday relative move",
-              "sector inline/slightly ahead",
-              "move has volume support"
-            ],
-            "score": 62
-          },
-          "risk_quality": {
-            "grade": "A",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak",
-              "tradeability strong"
-            ],
-            "score": 92
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF SPY"
-            ],
-            "score": 32
-          },
-          "technical": {
-            "grade": "F",
-            "notes": [
-              "above VWAP",
-              "RSI healthy"
-            ],
-            "score": 44
-          },
-          "volume_liquidity": {
-            "grade": "A",
-            "notes": [
-              "volume expansion",
-              "high dollar volume",
-              "spread/range acceptable"
-            ],
-            "score": 90
-          }
-        },
-        "grade": "C",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.1,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.3,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 5.13,
-      "decision": "WAIT",
-      "dollar_volume": 130659845.72,
-      "ema9_distance_pct": -0.1,
-      "entry_score": 80,
-      "first_seen": "2026-07-02T17:45:27.085679+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 358.11,
-        "entry": 359.1,
-        "invalidation": 349.29,
-        "risk_reward": 0.11,
-        "stop": 349.29,
-        "target1": 360.19,
-        "target1_source": "recent high",
-        "target2": 368.04,
-        "target2_source": "adjusted stretch target"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": true,
-      "lightgbm_proba": 0.6993,
-      "opportunity_score": 82,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 6,
-        "symbol_target1_rate_pct": 16.7
-      },
-      "panel_approved": false,
-      "panel_confidence": 0.5,
-      "panel_summary": "",
-      "panel_verdict": "PASS",
-      "previous_status": "WEAK RISK/REWARD",
-      "price": 359.1,
+      "price": 226.37,
       "reasons": [
         "Positive intraday move",
         "Strong momentum",
         "Volume expansion",
         "Above VWAP",
+        "Above EMA20",
         "Liquid enough",
         "RSI in healthy zone",
-        "Daily trend supportive",
-        "Tradable range/spread estimate"
+        "Daily trend supportive"
       ],
-      "s3_borrow_rate_pct": 2.82,
-      "s3_crowded_score": 1.54,
-      "s3_days_to_cover": 2.72,
-      "s3_divergence": 20.62,
+      "s3_borrow_rate_pct": 2.5,
+      "s3_crowded_score": 0.02,
+      "s3_days_to_cover": 0.02,
+      "s3_divergence": 8.9,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 22.16,
+      "s3_squeeze_risk": 8.92,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
+        "sector_change_pct": -0.06,
         "sector_etf": "SPY",
         "sector_vs_spy_pct": 0.0
       },
-      "spread_pct_est": 0.153,
+      "spread_pct_est": 0.181,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "V",
-      "tradeability": "STRONG",
+      "symbol": "BA",
+      "tradeability": "OK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.34,
-      "vwap_distance_pct": 2.23,
+      "volume_ratio": 5.41,
+      "vwap_distance_pct": 1.69,
       "warnings": [
         "Market regime is risk-off; be more selective",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $166.29 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $260.42 or higher target confirmation.",
       "advanced_breakdown": {
         "composite": 71,
         "factors": {
@@ -1030,231 +431,91 @@
         "grade": "C",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.14,
+      "atr_pct": 0.23,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.0,
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.2,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 2.51,
+      "day_change_pct": 4.53,
       "decision": "WAIT",
-      "dollar_volume": 89889980.86,
-      "ema9_distance_pct": 0.11,
+      "dollar_volume": 73728269.88,
+      "ema9_distance_pct": 0.25,
       "entry_score": 94,
-      "first_seen": "2026-07-02T17:45:27.085679+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 166.29,
-        "entry": 166.75,
-        "invalidation": 162.89,
-        "risk_reward": 0.04,
-        "stop": 162.89,
-        "target1": 166.91,
+        "better_entry": 260.42,
+        "entry": 261.14,
+        "invalidation": 252.71,
+        "risk_reward": 0.05,
+        "stop": 252.71,
+        "target1": 261.57,
         "target1_source": "recent high",
-        "target2": 169.99,
+        "target2": 268.32,
         "target2_source": "adjusted stretch target"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": false,
-      "lightgbm_proba": 0.6366,
-      "opportunity_score": 80,
+      "lightgbm_flagged": true,
+      "lightgbm_proba": 0.7561,
+      "opportunity_score": 92,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 1,
-        "symbol_target1_rate_pct": 100.0
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 8,
+        "symbol_target1_rate_pct": 50.0
       },
-      "previous_status": "WEAK RISK/REWARD",
-      "price": 166.75,
+      "panel_approved": false,
+      "panel_confidence": 0.5,
+      "panel_summary": "",
+      "panel_verdict": "PASS",
+      "previous_status": null,
+      "price": 261.14,
       "reasons": [
         "Positive intraday move",
+        "Strong momentum",
         "Volume expansion",
         "Above VWAP",
         "Above EMA20",
         "Liquid enough",
         "RSI in healthy zone",
-        "Daily trend supportive",
-        "Tradable range/spread estimate"
+        "Daily trend supportive"
       ],
-      "s3_borrow_rate_pct": 4.58,
-      "s3_crowded_score": 10.01,
-      "s3_days_to_cover": 3.69,
-      "s3_divergence": 16.44,
+      "s3_borrow_rate_pct": 2.87,
+      "s3_crowded_score": 3.67,
+      "s3_days_to_cover": 4.46,
+      "s3_divergence": 24.41,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 26.45,
+      "s3_squeeze_risk": 28.08,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
+        "sector_change_pct": -0.06,
         "sector_etf": "SPY",
         "sector_vs_spy_pct": 0.0
       },
-      "spread_pct_est": 0.186,
+      "spread_pct_est": 0.318,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "CRM",
+      "symbol": "ABBV",
       "tradeability": "OK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 4.13,
-      "vwap_distance_pct": 1.8,
+      "volume_ratio": 6.18,
+      "vwap_distance_pct": 2.75,
       "warnings": [
         "Market regime is risk-off; be more selective",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $539.28 or higher target confirmation.",
+      "action_text": "Wait. Do not chase. Better entry is near $79.63; invalid below $75.76.",
       "advanced_breakdown": {
-        "composite": 65,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "A",
-            "notes": [
-              "near valid VWAP extension",
-              "holding EMA9"
-            ],
-            "score": 86
-          },
-          "relative_strength": {
-            "grade": "C",
-            "notes": [
-              "positive intraday relative move",
-              "sector inline/slightly ahead",
-              "above short trend"
-            ],
-            "score": 60
-          },
-          "risk_quality": {
-            "grade": "B",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak"
-            ],
-            "score": 84
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF SPY"
-            ],
-            "score": 32
-          },
-          "technical": {
-            "grade": "B",
-            "notes": [
-              "above VWAP",
-              "above EMA9",
-              "above EMA20",
-              "RSI healthy"
-            ],
-            "score": 80
-          },
-          "volume_liquidity": {
-            "grade": "C",
-            "notes": [
-              "volume not expanded",
-              "liquid enough",
-              "spread/range acceptable"
-            ],
-            "score": 67
-          }
-        },
-        "grade": "C",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.14,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.6,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 4.25,
-      "decision": "WAIT",
-      "dollar_volume": 26406960.94,
-      "ema9_distance_pct": 0.07,
-      "entry_score": 82,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 539.28,
-        "entry": 540.76,
-        "invalidation": 521.81,
-        "risk_reward": 0.03,
-        "stop": 521.81,
-        "target1": 541.41,
-        "target1_source": "recent high",
-        "target2": 542.16,
-        "target2_source": "day high"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": false,
-      "lightgbm_proba": 0.4687,
-      "opportunity_score": 77,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 5,
-        "symbol_target1_rate_pct": 40.0
-      },
-      "previous_status": null,
-      "price": 540.76,
-      "reasons": [
-        "Positive intraday move",
-        "Strong momentum",
-        "Above VWAP",
-        "Above EMA20",
-        "Liquid enough",
-        "RSI in healthy zone",
-        "Daily trend supportive",
-        "Tradable range/spread estimate"
-      ],
-      "s3_borrow_rate_pct": 2.92,
-      "s3_crowded_score": 15.51,
-      "s3_days_to_cover": 2.73,
-      "s3_divergence": 5.25,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 20.76,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
-        "sector_etf": "SPY",
-        "sector_vs_spy_pct": 0.0
-      },
-      "spread_pct_est": 0.0,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "LMT",
-      "tradeability": "OK",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 0.18,
-      "vwap_distance_pct": 3.05,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Do not chase. Better entry is near $79.08; invalid below $74.17.",
-      "advanced_breakdown": {
-        "composite": 63,
+        "composite": 71,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -1273,22 +534,23 @@
             "score": 54
           },
           "relative_strength": {
-            "grade": "C",
+            "grade": "A",
             "notes": [
               "strong intraday relative move",
               "sector inline/slightly ahead",
-              "above short trend"
+              "above short trend",
+              "move has volume support"
             ],
-            "score": 72
+            "score": 92
           },
           "risk_quality": {
-            "grade": "C",
+            "grade": "B",
             "notes": [
-              "chase risk MEDIUM",
+              "chase risk LOW",
               "volatility manageable",
               "RR weak"
             ],
-            "score": 70
+            "score": 84
           },
           "sector_market": {
             "grade": "F",
@@ -1309,53 +571,53 @@
             "score": 100
           },
           "volume_liquidity": {
-            "grade": "C",
+            "grade": "A",
             "notes": [
-              "volume not expanded",
+              "strong volume expansion",
               "liquid enough",
               "spread/range acceptable"
             ],
-            "score": 67
+            "score": 90
           }
         },
         "grade": "C",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.41,
+      "atr_pct": 0.47,
       "catalyst_quality": "UNKNOWN",
-      "chase_risk": "MEDIUM",
-      "confidence_label": "MEDIUM",
-      "data_age_minutes": 17.1,
+      "chase_risk": "LOW",
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.4,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 9.39,
+      "day_change_pct": 9.86,
       "decision": "WAIT",
-      "dollar_volume": 25233267.93,
-      "ema9_distance_pct": 0.46,
-      "entry_score": 72,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 25697295.06,
+      "ema9_distance_pct": 0.77,
+      "entry_score": 84,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 79.08,
-        "entry": 79.3,
-        "invalidation": 74.17,
-        "risk_reward": 0.08,
-        "stop": 74.17,
-        "target1": 79.7,
+        "better_entry": 79.63,
+        "entry": 79.85,
+        "invalidation": 75.76,
+        "risk_reward": 0.1,
+        "stop": 75.76,
+        "target1": 80.25,
         "target1_source": "ATR extension",
-        "target2": 79.99,
+        "target2": 80.55,
         "target2_source": "stretch ATR extension"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": true,
       "lightgbm_proba": 1.0,
-      "opportunity_score": 77,
+      "opportunity_score": 92,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 4,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 5,
         "symbol_target1_rate_pct": 100.0
       },
       "panel_approved": false,
@@ -1363,47 +625,197 @@
       "panel_summary": "",
       "panel_verdict": "PASS",
       "previous_status": null,
-      "price": 79.3,
+      "price": 79.85,
       "reasons": [
         "Positive intraday move",
         "Strong momentum",
+        "Volume expansion",
         "Above VWAP",
         "Above EMA20",
         "Liquid enough",
         "RSI in healthy zone",
-        "Daily trend supportive",
-        "Tradable range/spread estimate"
+        "Daily trend supportive"
       ],
       "s3_borrow_rate_pct": 7.02,
       "s3_crowded_score": 22.22,
       "s3_days_to_cover": 10.94,
-      "s3_divergence": 41.03,
+      "s3_divergence": 41.97,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 63.25,
+      "s3_squeeze_risk": 64.19,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
+        "sector_change_pct": -0.06,
         "sector_etf": "SPY",
         "sector_vs_spy_pct": 0.0
       },
-      "spread_pct_est": 0.259,
+      "spread_pct_est": 0.595,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
       "symbol": "MRNA",
       "tradeability": "OK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 0.8,
-      "vwap_distance_pct": 6.29,
+      "volume_ratio": 3.62,
+      "vwap_distance_pct": 4.8,
       "warnings": [
         "Market regime is risk-off; be more selective",
         "Too extended above VWAP",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $536.63 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $544.36 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 74,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
+            ],
+            "score": 100
+          },
+          "relative_strength": {
+            "grade": "B",
+            "notes": [
+              "positive intraday relative move",
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 80
+          },
+          "risk_quality": {
+            "grade": "B",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak"
+            ],
+            "score": 84
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF SPY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "A",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI hot"
+            ],
+            "score": 86
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "liquid enough",
+              "spread/range acceptable"
+            ],
+            "score": 90
+          }
+        },
+        "grade": "C",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.16,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.3,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 5.63,
+      "decision": "WAIT",
+      "dollar_volume": 27477009.41,
+      "ema9_distance_pct": 0.33,
+      "entry_score": 94,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 544.36,
+        "entry": 545.86,
+        "invalidation": 528.54,
+        "risk_reward": 0.16,
+        "stop": 528.54,
+        "target1": 548.59,
+        "target1_source": "ATR extension",
+        "target2": 550.64,
+        "target2_source": "stretch ATR extension"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.5101,
+      "opportunity_score": 84,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 6,
+        "symbol_target1_rate_pct": 50.0
+      },
+      "previous_status": null,
+      "price": 545.86,
+      "reasons": [
+        "Positive intraday move",
+        "Strong momentum",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "Daily trend supportive",
+        "Tradable range/spread estimate"
+      ],
+      "s3_borrow_rate_pct": 2.92,
+      "s3_crowded_score": 15.51,
+      "s3_days_to_cover": 2.73,
+      "s3_divergence": 8.01,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 23.52,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.317,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "LMT",
+      "tradeability": "OK",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 7.73,
+      "vwap_distance_pct": 2.69,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "RSI is overheated",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $77.38 or higher target confirmation.",
       "advanced_breakdown": {
         "composite": 66,
         "factors": {
@@ -1415,143 +827,146 @@
             "score": 45
           },
           "execution_timing": {
-            "grade": "A",
+            "grade": "C",
             "notes": [
-              "near valid VWAP extension",
-              "holding EMA9"
+              "near valid VWAP extension"
             ],
-            "score": 86
+            "score": 74
           },
           "relative_strength": {
             "grade": "C",
             "notes": [
               "positive intraday relative move",
-              "sector inline/slightly ahead",
-              "above short trend"
-            ],
-            "score": 60
-          },
-          "risk_quality": {
-            "grade": "A",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak",
-              "tradeability strong"
-            ],
-            "score": 92
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF SPY"
-            ],
-            "score": 32
-          },
-          "technical": {
-            "grade": "C",
-            "notes": [
-              "above VWAP",
-              "above EMA9",
-              "above EMA20",
-              "RSI weak/neutral"
+              "sector beating SPY",
+              "move has volume support"
             ],
             "score": 70
           },
-          "volume_liquidity": {
+          "risk_quality": {
             "grade": "B",
             "notes": [
-              "volume not expanded",
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak"
+            ],
+            "score": 84
+          },
+          "sector_market": {
+            "grade": "D",
+            "notes": [
+              "market risk-off",
+              "sector ETF XLC",
+              "sector positive",
+              "sector leading SPY"
+            ],
+            "score": 54
+          },
+          "technical": {
+            "grade": "F",
+            "notes": [
+              "above VWAP",
+              "RSI weak/neutral"
+            ],
+            "score": 34
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
               "high dollar volume",
               "spread/range acceptable"
             ],
-            "score": 77
+            "score": 100
           }
         },
         "grade": "C",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.11,
+      "atr_pct": 0.27,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
-      "confidence_label": "MEDIUM",
-      "data_age_minutes": 17.5,
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.5,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 4.31,
+      "day_change_pct": 5.85,
       "decision": "WAIT",
-      "dollar_volume": 120902043.6,
-      "ema9_distance_pct": 0.01,
-      "entry_score": 72,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 272567687.81,
+      "ema9_distance_pct": -0.36,
+      "entry_score": 70,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 536.63,
-        "entry": 538.11,
-        "invalidation": 523.16,
-        "risk_reward": 0.07,
-        "stop": 523.16,
-        "target1": 539.09,
-        "target1_source": "recent high",
-        "target2": 551.05,
-        "target2_source": "adjusted stretch target"
+        "better_entry": 77.38,
+        "entry": 77.59,
+        "invalidation": 75.08,
+        "risk_reward": 0.15,
+        "stop": 75.08,
+        "target1": 77.98,
+        "target1_source": "ATR extension",
+        "target2": 78.2,
+        "target2_source": "recent high"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": false,
-      "lightgbm_proba": 0.6228,
-      "opportunity_score": 77,
+      "lightgbm_flagged": true,
+      "lightgbm_proba": 0.708,
+      "opportunity_score": 84,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 5,
-        "symbol_target1_rate_pct": 20.0
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 3,
+        "symbol_target1_rate_pct": 33.3
       },
+      "panel_approved": false,
+      "panel_confidence": 0.5,
+      "panel_summary": "",
+      "panel_verdict": "PASS",
       "previous_status": null,
-      "price": 538.11,
+      "price": 77.59,
       "reasons": [
         "Positive intraday move",
         "Strong momentum",
+        "Volume expansion",
         "Above VWAP",
-        "Above EMA20",
         "Liquid enough",
-        "RSI in healthy zone",
         "Daily trend supportive",
-        "Tradable range/spread estimate"
+        "Tradable range/spread estimate",
+        "Sector/theme is positive"
       ],
-      "s3_borrow_rate_pct": 2.69,
-      "s3_crowded_score": 0.91,
-      "s3_days_to_cover": 1.8,
-      "s3_divergence": 15.52,
+      "s3_borrow_rate_pct": 3.1,
+      "s3_crowded_score": 4.43,
+      "s3_days_to_cover": 3.0,
+      "s3_divergence": 21.2,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 16.43,
+      "s3_squeeze_risk": 25.63,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
-        "sector_etf": "SPY",
-        "sector_vs_spy_pct": 0.0
+        "sector_change_pct": 0.55,
+        "sector_etf": "XLC",
+        "sector_vs_spy_pct": 0.61
       },
-      "spread_pct_est": 0.091,
+      "spread_pct_est": 0.38,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "MA",
-      "tradeability": "STRONG",
+      "symbol": "NFLX",
+      "tradeability": "OK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 0.77,
-      "vwap_distance_pct": 2.28,
+      "volume_ratio": 4.52,
+      "vwap_distance_pct": 2.76,
       "warnings": [
         "Market regime is risk-off; be more selective",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $351.49 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $74.25 or higher target confirmation.",
       "advanced_breakdown": {
-        "composite": 72,
+        "composite": 80,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -1564,9 +979,10 @@
             "grade": "A",
             "notes": [
               "near valid VWAP extension",
+              "breakout timing",
               "holding EMA9"
             ],
-            "score": 86
+            "score": 100
           },
           "relative_strength": {
             "grade": "B",
@@ -1579,127 +995,129 @@
             "score": 76
           },
           "risk_quality": {
-            "grade": "B",
+            "grade": "A",
             "notes": [
               "chase risk LOW",
               "volatility manageable",
-              "RR weak"
+              "RR weak",
+              "tradeability strong"
             ],
-            "score": 84
+            "score": 92
           },
           "sector_market": {
             "grade": "D",
             "notes": [
               "market risk-off",
-              "sector ETF CIBR",
+              "sector ETF IYT",
               "sector positive",
               "sector leading SPY"
             ],
             "score": 54
           },
           "technical": {
-            "grade": "B",
+            "grade": "A",
             "notes": [
               "above VWAP",
               "above EMA9",
               "above EMA20",
-              "RSI healthy"
+              "RSI weak/neutral"
             ],
-            "score": 80
+            "score": 90
           },
           "volume_liquidity": {
-            "grade": "B",
+            "grade": "A",
             "notes": [
-              "volume expansion",
-              "liquid enough",
+              "strong volume expansion",
+              "high dollar volume",
               "spread/range acceptable"
             ],
-            "score": 80
+            "score": 100
           }
         },
-        "grade": "C",
+        "grade": "B",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.27,
+      "atr_pct": 0.24,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.2,
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.7,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 0.72,
+      "day_change_pct": 1.61,
       "decision": "WAIT",
-      "dollar_volume": 94022070.99,
-      "ema9_distance_pct": 0.06,
+      "dollar_volume": 108824551.46,
+      "ema9_distance_pct": 0.34,
       "entry_score": 94,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 351.49,
-        "entry": 352.46,
-        "invalidation": 348.5,
-        "risk_reward": 0.31,
-        "stop": 348.5,
-        "target1": 353.69,
-        "target1_source": "recent high",
-        "target2": 354.22,
-        "target2_source": "ATR extension"
+        "better_entry": 74.25,
+        "entry": 74.45,
+        "invalidation": 72.94,
+        "risk_reward": 0.25,
+        "stop": 72.94,
+        "target1": 74.82,
+        "target1_source": "ATR extension",
+        "target2": 75.1,
+        "target2_source": "stretch ATR extension"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": false,
-      "lightgbm_proba": 0.5364,
-      "opportunity_score": 74,
+      "lightgbm_proba": 0.5805,
+      "opportunity_score": 82,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 17,
-        "symbol_target1_rate_pct": 41.2
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 12,
+        "symbol_target1_rate_pct": 41.7
       },
       "previous_status": null,
-      "price": 352.46,
+      "price": 74.45,
       "reasons": [
+        "Positive intraday move",
         "Volume expansion",
         "Above VWAP",
         "Above EMA20",
         "Liquid enough",
-        "RSI in healthy zone",
         "Daily trend supportive",
         "Tradable range/spread estimate",
         "Sector/theme is positive"
       ],
-      "s3_borrow_rate_pct": 3.19,
-      "s3_crowded_score": 3.34,
-      "s3_days_to_cover": 2.36,
-      "s3_divergence": 9.76,
+      "s3_borrow_rate_pct": 3.2,
+      "s3_crowded_score": 3.37,
+      "s3_days_to_cover": 2.65,
+      "s3_divergence": 12.7,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 13.1,
+      "s3_squeeze_risk": 16.07,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": 1.05,
-        "sector_etf": "CIBR",
-        "sector_vs_spy_pct": 1.59
+        "sector_change_pct": 1.24,
+        "sector_etf": "IYT",
+        "sector_vs_spy_pct": 1.3
       },
-      "spread_pct_est": 0.173,
+      "spread_pct_est": 0.242,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "PANW",
-      "tradeability": "OK",
+      "symbol": "UBER",
+      "tradeability": "STRONG",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.27,
-      "vwap_distance_pct": 0.58,
+      "volume_ratio": 7.49,
+      "vwap_distance_pct": 1.51,
       "warnings": [
         "Market regime is risk-off; be more selective",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $106.64 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $58.53 or higher target confirmation.",
       "advanced_breakdown": {
-        "composite": 70,
+        "composite": 77,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -1712,9 +1130,159 @@
             "grade": "A",
             "notes": [
               "near valid VWAP extension",
+              "breakout timing",
               "holding EMA9"
             ],
-            "score": 86
+            "score": 100
+          },
+          "relative_strength": {
+            "grade": "C",
+            "notes": [
+              "slightly positive",
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 68
+          },
+          "risk_quality": {
+            "grade": "A",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak",
+              "tradeability strong"
+            ],
+            "score": 92
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF SPY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "A",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI healthy"
+            ],
+            "score": 100
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "high dollar volume",
+              "spread/range acceptable"
+            ],
+            "score": 100
+          }
+        },
+        "grade": "B",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.1,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.2,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 1.21,
+      "decision": "WAIT",
+      "dollar_volume": 149515518.76,
+      "ema9_distance_pct": 0.15,
+      "entry_score": 100,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 58.53,
+        "entry": 58.69,
+        "invalidation": 57.99,
+        "risk_reward": 0.42,
+        "stop": 57.99,
+        "target1": 58.98,
+        "target1_source": "ATR extension",
+        "target2": 58.98,
+        "target2_source": "day high"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.1263,
+      "opportunity_score": 80,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 4,
+        "symbol_target1_rate_pct": 25.0
+      },
+      "previous_status": null,
+      "price": 58.69,
+      "reasons": [
+        "Positive intraday move",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "RSI in healthy zone",
+        "Daily trend supportive",
+        "Tradable range/spread estimate"
+      ],
+      "s3_borrow_rate_pct": 2.5,
+      "s3_crowded_score": 20.0,
+      "s3_days_to_cover": 0.0,
+      "s3_divergence": -17.58,
+      "s3_loophole_active": false,
+      "s3_squeeze_risk": 2.42,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.17,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "BAC",
+      "tradeability": "STRONG",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 5.56,
+      "vwap_distance_pct": 0.65,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $537.87 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 78,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
+            ],
+            "score": 100
           },
           "relative_strength": {
             "grade": "B",
@@ -1745,403 +1313,109 @@
             "score": 32
           },
           "technical": {
-            "grade": "C",
+            "grade": "A",
             "notes": [
               "above VWAP",
               "above EMA9",
               "above EMA20",
-              "RSI hot"
+              "RSI healthy"
             ],
-            "score": 66
+            "score": 100
           },
           "volume_liquidity": {
             "grade": "A",
             "notes": [
-              "volume expansion",
+              "strong volume expansion",
               "high dollar volume",
               "spread/range acceptable"
             ],
-            "score": 90
+            "score": 100
           }
         },
-        "grade": "C",
+        "grade": "B",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.27,
+      "atr_pct": 0.12,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.2,
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.4,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 2.7,
+      "day_change_pct": 2.56,
       "decision": "WAIT",
-      "dollar_volume": 110254737.06,
-      "ema9_distance_pct": 0.12,
-      "entry_score": 84,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 122221564.55,
+      "ema9_distance_pct": 0.15,
+      "entry_score": 100,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 106.64,
-        "entry": 106.93,
-        "invalidation": 104.21,
-        "risk_reward": 0.06,
-        "stop": 104.21,
-        "target1": 107.1,
-        "target1_source": "recent high",
-        "target2": 107.46,
-        "target2_source": "ATR extension"
+        "better_entry": 537.87,
+        "entry": 539.36,
+        "invalidation": 526.86,
+        "risk_reward": 0.22,
+        "stop": 526.86,
+        "target1": 542.05,
+        "target1_source": "ATR extension",
+        "target2": 544.07,
+        "target2_source": "stretch ATR extension"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": false,
-      "lightgbm_proba": 0.5182,
-      "opportunity_score": 72,
+      "lightgbm_proba": 0.5703,
+      "opportunity_score": 80,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 7,
-        "symbol_target1_rate_pct": 57.1
-      },
-      "previous_status": null,
-      "price": 106.93,
-      "reasons": [
-        "Positive intraday move",
-        "Volume expansion",
-        "Above VWAP",
-        "Above EMA20",
-        "Liquid enough",
-        "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Market regime is risk-off"
-      ],
-      "s3_borrow_rate_pct": 3.95,
-      "s3_crowded_score": 8.27,
-      "s3_days_to_cover": 1.7,
-      "s3_divergence": 8.55,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 16.82,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
-        "sector_etf": "SPY",
-        "sector_vs_spy_pct": 0.0
-      },
-      "spread_pct_est": 0.173,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "NOW",
-      "tradeability": "STRONG",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.55,
-      "vwap_distance_pct": 2.03,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "RSI is overheated",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $128.28 or higher target confirmation.",
-      "advanced_breakdown": {
-        "composite": 68,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "A",
-            "notes": [
-              "near valid VWAP extension",
-              "holding EMA9"
-            ],
-            "score": 86
-          },
-          "relative_strength": {
-            "grade": "B",
-            "notes": [
-              "positive intraday relative move",
-              "sector inline/slightly ahead",
-              "above short trend",
-              "move has volume support"
-            ],
-            "score": 80
-          },
-          "risk_quality": {
-            "grade": "B",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak"
-            ],
-            "score": 84
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF SPY"
-            ],
-            "score": 32
-          },
-          "technical": {
-            "grade": "C",
-            "notes": [
-              "above VWAP",
-              "above EMA9",
-              "above EMA20",
-              "RSI hot"
-            ],
-            "score": 66
-          },
-          "volume_liquidity": {
-            "grade": "B",
-            "notes": [
-              "volume expansion",
-              "liquid enough",
-              "spread/range acceptable"
-            ],
-            "score": 80
-          }
-        },
-        "grade": "C",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.09,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.5,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 2.25,
-      "decision": "WAIT",
-      "dollar_volume": 59606087.23,
-      "ema9_distance_pct": 0.1,
-      "entry_score": 84,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 128.28,
-        "entry": 128.63,
-        "invalidation": 126.13,
-        "risk_reward": 0.03,
-        "stop": 126.13,
-        "target1": 128.71,
-        "target1_source": "recent high",
-        "target2": 129.16,
-        "target2_source": "day high"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": false,
-      "lightgbm_proba": 0.5852,
-      "opportunity_score": 72,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 13,
-        "symbol_target1_rate_pct": 61.5
-      },
-      "previous_status": null,
-      "price": 128.63,
-      "reasons": [
-        "Positive intraday move",
-        "Volume expansion",
-        "Above VWAP",
-        "Above EMA20",
-        "Liquid enough",
-        "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Market regime is risk-off"
-      ],
-      "s3_borrow_rate_pct": 2.81,
-      "s3_crowded_score": 3.55,
-      "s3_days_to_cover": 2.77,
-      "s3_divergence": 13.01,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 16.56,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
-        "sector_etf": "SPY",
-        "sector_vs_spy_pct": 0.0
-      },
-      "spread_pct_est": 0.066,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "MRK",
-      "tradeability": "OK",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.27,
-      "vwap_distance_pct": 1.42,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "RSI is overheated",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $224.89 or higher target confirmation.",
-      "advanced_breakdown": {
-        "composite": 66,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "A",
-            "notes": [
-              "near valid VWAP extension",
-              "holding EMA9"
-            ],
-            "score": 86
-          },
-          "relative_strength": {
-            "grade": "C",
-            "notes": [
-              "slightly positive",
-              "sector inline/slightly ahead",
-              "above short trend",
-              "move has volume support"
-            ],
-            "score": 68
-          },
-          "risk_quality": {
-            "grade": "B",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak"
-            ],
-            "score": 84
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF SPY"
-            ],
-            "score": 32
-          },
-          "technical": {
-            "grade": "C",
-            "notes": [
-              "above VWAP",
-              "above EMA9",
-              "above EMA20",
-              "RSI hot"
-            ],
-            "score": 66
-          },
-          "volume_liquidity": {
-            "grade": "B",
-            "notes": [
-              "volume expansion",
-              "liquid enough",
-              "spread/range acceptable"
-            ],
-            "score": 80
-          }
-        },
-        "grade": "C",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.09,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.5,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 1.15,
-      "decision": "WAIT",
-      "dollar_volume": 28518084.8,
-      "ema9_distance_pct": 0.12,
-      "entry_score": 84,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 224.89,
-        "entry": 225.51,
-        "invalidation": 221.54,
-        "risk_reward": 0.1,
-        "stop": 221.54,
-        "target1": 225.89,
-        "target1_source": "recent high",
-        "target2": 226.37,
-        "target2_source": "prior day high"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": false,
-      "lightgbm_proba": 0.5916,
-      "opportunity_score": 72,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
+        "global_target1_rate_pct": 41.6,
         "symbol_sample_size": 6,
         "symbol_target1_rate_pct": 33.3
       },
       "previous_status": null,
-      "price": 225.51,
+      "price": 539.36,
       "reasons": [
         "Positive intraday move",
         "Volume expansion",
         "Above VWAP",
         "Above EMA20",
         "Liquid enough",
+        "RSI in healthy zone",
         "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Market regime is risk-off"
+        "Tradable range/spread estimate"
       ],
-      "s3_borrow_rate_pct": 3.0,
-      "s3_crowded_score": 3.11,
-      "s3_days_to_cover": 3.16,
-      "s3_divergence": 13.44,
+      "s3_borrow_rate_pct": 2.69,
+      "s3_crowded_score": 0.91,
+      "s3_days_to_cover": 1.8,
+      "s3_divergence": 12.02,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 16.55,
+      "s3_squeeze_risk": 12.93,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
+        "sector_change_pct": -0.06,
         "sector_etf": "SPY",
         "sector_vs_spy_pct": 0.0
       },
-      "spread_pct_est": 0.055,
+      "spread_pct_est": 0.272,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "LOW",
-      "tradeability": "OK",
+      "symbol": "MA",
+      "tradeability": "STRONG",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.25,
-      "vwap_distance_pct": 1.22,
+      "volume_ratio": 4.81,
+      "vwap_distance_pct": 1.8,
       "warnings": [
         "Market regime is risk-off; be more selective",
-        "RSI is overheated",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $98.07 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $262.32 or higher target confirmation.",
       "advanced_breakdown": {
-        "composite": 68,
+        "composite": 76,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -2154,19 +1428,20 @@
             "grade": "A",
             "notes": [
               "near valid VWAP extension",
+              "breakout timing",
               "holding EMA9"
             ],
-            "score": 86
+            "score": 100
           },
           "relative_strength": {
-            "grade": "C",
+            "grade": "B",
             "notes": [
-              "slightly positive",
+              "positive intraday relative move",
               "sector inline/slightly ahead",
               "above short trend",
               "move has volume support"
             ],
-            "score": 68
+            "score": 80
           },
           "risk_quality": {
             "grade": "B",
@@ -2186,67 +1461,67 @@
             "score": 32
           },
           "technical": {
-            "grade": "B",
+            "grade": "A",
             "notes": [
               "above VWAP",
               "above EMA9",
               "above EMA20",
               "RSI healthy"
             ],
-            "score": 80
+            "score": 100
           },
           "volume_liquidity": {
-            "grade": "B",
+            "grade": "A",
             "notes": [
-              "volume expansion",
+              "strong volume expansion",
               "liquid enough",
               "spread/range acceptable"
             ],
-            "score": 80
+            "score": 90
           }
         },
-        "grade": "C",
+        "grade": "B",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.14,
+      "atr_pct": 0.12,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
-      "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 17.3,
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.8,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 1.03,
+      "day_change_pct": 3.91,
       "decision": "WAIT",
-      "dollar_volume": 48685171.02,
-      "ema9_distance_pct": 0.03,
-      "entry_score": 94,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 82491671.9,
+      "ema9_distance_pct": 0.24,
+      "entry_score": 100,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 98.07,
-        "entry": 98.34,
-        "invalidation": 96.35,
-        "risk_reward": 0.08,
-        "stop": 96.35,
-        "target1": 98.5,
-        "target1_source": "recent high",
-        "target2": 100.09,
-        "target2_source": "adjusted stretch target"
+        "better_entry": 262.32,
+        "entry": 263.04,
+        "invalidation": 255.83,
+        "risk_reward": 0.18,
+        "stop": 255.83,
+        "target1": 264.36,
+        "target1_source": "ATR extension",
+        "target2": 265.34,
+        "target2_source": "stretch ATR extension"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": false,
-      "lightgbm_proba": 0.5865,
-      "opportunity_score": 70,
+      "lightgbm_proba": 0.5868,
+      "opportunity_score": 80,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 1,
-        "symbol_target1_rate_pct": 0.0
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 12,
+        "symbol_target1_rate_pct": 58.3
       },
       "previous_status": null,
-      "price": 98.34,
+      "price": 263.04,
       "reasons": [
         "Positive intraday move",
         "Volume expansion",
@@ -2254,40 +1529,41 @@
         "Above EMA20",
         "Liquid enough",
         "RSI in healthy zone",
-        "Tradable range/spread estimate",
-        "Market regime is risk-off"
+        "Daily trend supportive",
+        "Tradable range/spread estimate"
       ],
-      "s3_borrow_rate_pct": 2.85,
-      "s3_crowded_score": 1.67,
-      "s3_days_to_cover": 2.9,
-      "s3_divergence": 13.1,
+      "s3_borrow_rate_pct": 2.81,
+      "s3_crowded_score": 9.4,
+      "s3_days_to_cover": 3.43,
+      "s3_divergence": 13.12,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 14.77,
+      "s3_squeeze_risk": 22.52,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
+        "sector_change_pct": -0.06,
         "sector_etf": "SPY",
         "sector_vs_spy_pct": 0.0
       },
-      "spread_pct_est": 0.147,
+      "spread_pct_est": 0.412,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "DIS",
+      "symbol": "JNJ",
       "tradeability": "OK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.35,
-      "vwap_distance_pct": 1.5,
+      "volume_ratio": 6.25,
+      "vwap_distance_pct": 2.24,
       "warnings": [
         "Market regime is risk-off; be more selective",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $641.69 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $163.32 or higher target confirmation.",
       "advanced_breakdown": {
-        "composite": 62,
+        "composite": 78,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -2297,29 +1573,33 @@
             "score": 45
           },
           "execution_timing": {
-            "grade": "C",
+            "grade": "A",
             "notes": [
-              "near valid VWAP extension"
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
             ],
-            "score": 74
+            "score": 100
           },
           "relative_strength": {
-            "grade": "C",
+            "grade": "B",
             "notes": [
               "positive intraday relative move",
               "sector inline/slightly ahead",
+              "above short trend",
               "move has volume support"
             ],
-            "score": 62
+            "score": 80
           },
           "risk_quality": {
-            "grade": "B",
+            "grade": "A",
             "notes": [
               "chase risk LOW",
               "volatility manageable",
-              "RR weak"
+              "RR weak",
+              "tradeability strong"
             ],
-            "score": 84
+            "score": 92
           },
           "sector_market": {
             "grade": "F",
@@ -2330,252 +1610,556 @@
             "score": 32
           },
           "technical": {
-            "grade": "F",
+            "grade": "A",
             "notes": [
               "above VWAP",
+              "above EMA9",
+              "above EMA20",
               "RSI healthy"
             ],
-            "score": 44
+            "score": 100
           },
           "volume_liquidity": {
             "grade": "A",
             "notes": [
               "strong volume expansion",
-              "liquid enough",
+              "high dollar volume",
               "spread/range acceptable"
             ],
-            "score": 90
+            "score": 100
           }
         },
-        "grade": "C",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.1,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM",
-      "data_age_minutes": 17.2,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 2.54,
-      "decision": "WAIT",
-      "dollar_volume": 49618165.79,
-      "ema9_distance_pct": -0.1,
-      "entry_score": 80,
-      "first_seen": "2026-07-02T17:45:27.085679+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 641.69,
-        "entry": 643.46,
-        "invalidation": 628.02,
-        "risk_reward": 0.1,
-        "stop": 628.02,
-        "target1": 645.08,
-        "target1_source": "recent high",
-        "target2": 646.68,
-        "target2_source": "ATR extension"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": false,
-      "lightgbm_proba": 0.4681,
-      "opportunity_score": 70,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 3,
-        "symbol_target1_rate_pct": 33.3
-      },
-      "previous_status": "WEAK RISK/REWARD",
-      "price": 643.46,
-      "reasons": [
-        "Positive intraday move",
-        "Volume expansion",
-        "Above VWAP",
-        "Liquid enough",
-        "RSI in healthy zone",
-        "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Market regime is risk-off"
-      ],
-      "s3_borrow_rate_pct": 3.33,
-      "s3_crowded_score": 13.41,
-      "s3_days_to_cover": 2.72,
-      "s3_divergence": 5.21,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 18.62,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
-        "sector_etf": "SPY",
-        "sector_vs_spy_pct": 0.0
-      },
-      "spread_pct_est": 0.255,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "REGN",
-      "tradeability": "OK",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 2.07,
-      "vwap_distance_pct": 1.88,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $103.92 or higher target confirmation.",
-      "advanced_breakdown": {
-        "composite": 60,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "C",
-            "notes": [
-              "near valid VWAP extension"
-            ],
-            "score": 74
-          },
-          "relative_strength": {
-            "grade": "D",
-            "notes": [
-              "slightly positive",
-              "sector inline/slightly ahead",
-              "move has volume support"
-            ],
-            "score": 50
-          },
-          "risk_quality": {
-            "grade": "B",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak"
-            ],
-            "score": 84
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF SPY"
-            ],
-            "score": 32
-          },
-          "technical": {
-            "grade": "F",
-            "notes": [
-              "above VWAP",
-              "RSI healthy"
-            ],
-            "score": 44
-          },
-          "volume_liquidity": {
-            "grade": "A",
-            "notes": [
-              "strong volume expansion",
-              "liquid enough",
-              "spread/range acceptable"
-            ],
-            "score": 90
-          }
-        },
-        "grade": "C",
+        "grade": "B",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
       "atr_pct": 0.11,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
-      "confidence_label": "MEDIUM",
-      "data_age_minutes": 17.6,
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.8,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 1.57,
+      "day_change_pct": 2.59,
       "decision": "WAIT",
-      "dollar_volume": 36615298.55,
-      "ema9_distance_pct": -0.01,
-      "entry_score": 80,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 188521943.96,
+      "ema9_distance_pct": 0.25,
+      "entry_score": 100,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 103.92,
-        "entry": 104.21,
-        "invalidation": 102.79,
+        "better_entry": 163.32,
+        "entry": 163.77,
+        "invalidation": 160.36,
+        "risk_reward": 0.24,
+        "stop": 160.36,
+        "target1": 164.59,
+        "target1_source": "ATR extension",
+        "target2": 165.2,
+        "target2_source": "stretch ATR extension"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.4677,
+      "opportunity_score": 80,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 4,
+        "symbol_target1_rate_pct": 50.0
+      },
+      "previous_status": null,
+      "price": 163.77,
+      "reasons": [
+        "Positive intraday move",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "RSI in healthy zone",
+        "Daily trend supportive",
+        "Tradable range/spread estimate"
+      ],
+      "s3_borrow_rate_pct": 2.5,
+      "s3_crowded_score": 0.0,
+      "s3_days_to_cover": 0.0,
+      "s3_divergence": 5.18,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 5.18,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.321,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "XLV",
+      "tradeability": "STRONG",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 6.63,
+      "vwap_distance_pct": 1.56,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $55.46 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 77,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
+            ],
+            "score": 100
+          },
+          "relative_strength": {
+            "grade": "C",
+            "notes": [
+              "slightly positive",
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 68
+          },
+          "risk_quality": {
+            "grade": "A",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak",
+              "tradeability strong"
+            ],
+            "score": 92
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF SPY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "A",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI healthy"
+            ],
+            "score": 100
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "high dollar volume",
+              "spread/range acceptable"
+            ],
+            "score": 100
+          }
+        },
+        "grade": "B",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.1,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "HIGH",
+      "data_age_minutes": 35.9,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 1.83,
+      "decision": "WAIT",
+      "dollar_volume": 161305184.29,
+      "ema9_distance_pct": 0.22,
+      "entry_score": 100,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 55.46,
+        "entry": 55.62,
+        "invalidation": 54.71,
+        "risk_reward": 0.31,
+        "stop": 54.71,
+        "target1": 55.89,
+        "target1_source": "ATR extension",
+        "target2": 56.1,
+        "target2_source": "stretch ATR extension"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.4449,
+      "opportunity_score": 80,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 4,
+        "symbol_target1_rate_pct": 25.0
+      },
+      "previous_status": null,
+      "price": 55.62,
+      "reasons": [
+        "Positive intraday move",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "RSI in healthy zone",
+        "Daily trend supportive",
+        "Tradable range/spread estimate"
+      ],
+      "s3_borrow_rate_pct": 2.5,
+      "s3_crowded_score": 0.0,
+      "s3_days_to_cover": 0.0,
+      "s3_divergence": 3.66,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 3.66,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.243,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "XLF",
+      "tradeability": "STRONG",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 7.57,
+      "vwap_distance_pct": 1.09,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $35.29 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 69,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "holding EMA9"
+            ],
+            "score": 86
+          },
+          "relative_strength": {
+            "grade": "C",
+            "notes": [
+              "slightly positive",
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 68
+          },
+          "risk_quality": {
+            "grade": "B",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak"
+            ],
+            "score": 84
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF SPY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "B",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI healthy"
+            ],
+            "score": 80
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "liquid enough",
+              "spread/range acceptable"
+            ],
+            "score": 90
+          }
+        },
+        "grade": "C",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.25,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.8,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 1.06,
+      "decision": "WAIT",
+      "dollar_volume": 53767443.81,
+      "ema9_distance_pct": 0.14,
+      "entry_score": 94,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 35.29,
+        "entry": 35.38,
+        "invalidation": 34.85,
         "risk_reward": 0.12,
-        "stop": 102.79,
-        "target1": 104.38,
+        "stop": 34.85,
+        "target1": 35.45,
         "target1_source": "recent high",
-        "target2": 104.73,
-        "target2_source": "ATR extension"
+        "target2": 35.47,
+        "target2_source": "day high"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.408,
+      "opportunity_score": 80,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 17,
+        "symbol_target1_rate_pct": 52.9
+      },
+      "previous_status": null,
+      "price": 35.38,
+      "reasons": [
+        "Positive intraday move",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "RSI in healthy zone",
+        "Daily trend supportive",
+        "Tradable range/spread estimate"
+      ],
+      "s3_borrow_rate_pct": 3.6,
+      "s3_crowded_score": 14.13,
+      "s3_days_to_cover": 2.42,
+      "s3_divergence": 1.2,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 15.33,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.565,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "CMG",
+      "tradeability": "OK",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 8.56,
+      "vwap_distance_pct": 0.96,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $18.57 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 61,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "holding EMA9"
+            ],
+            "score": 86
+          },
+          "relative_strength": {
+            "grade": "C",
+            "notes": [
+              "strong intraday relative move",
+              "sector lagging SPY",
+              "move has volume support"
+            ],
+            "score": 64
+          },
+          "risk_quality": {
+            "grade": "C",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak",
+              "tradeability weak"
+            ],
+            "score": 60
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF XLY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "C",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "RSI healthy"
+            ],
+            "score": 62
+          },
+          "volume_liquidity": {
+            "grade": "B",
+            "notes": [
+              "strong volume expansion",
+              "liquid enough",
+              "spread/range elevated"
+            ],
+            "score": 75
+          }
+        },
+        "grade": "C",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.53,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.6,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 6.46,
+      "decision": "WAIT",
+      "dollar_volume": 27169280.83,
+      "ema9_distance_pct": 0.03,
+      "entry_score": 90,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 18.57,
+        "entry": 18.62,
+        "invalidation": 18.4,
+        "risk_reward": 0.45,
+        "stop": 18.4,
+        "target1": 18.72,
+        "target1_source": "ATR extension",
+        "target2": 18.75,
+        "target2_source": "recent high"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": true,
-      "lightgbm_proba": 0.7743,
-      "opportunity_score": 70,
+      "lightgbm_proba": 0.7364,
+      "opportunity_score": 78,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 8,
-        "symbol_target1_rate_pct": 37.5
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 12,
+        "symbol_target1_rate_pct": 50.0
       },
       "panel_approved": false,
       "panel_confidence": 0.5,
       "panel_summary": "",
       "panel_verdict": "PASS",
       "previous_status": null,
-      "price": 104.21,
+      "price": 18.62,
       "reasons": [
         "Positive intraday move",
+        "Strong momentum",
         "Volume expansion",
         "Above VWAP",
         "Liquid enough",
         "RSI in healthy zone",
         "Daily trend supportive",
-        "Tradable range/spread estimate",
         "Market regime is risk-off"
       ],
-      "s3_borrow_rate_pct": 3.67,
-      "s3_crowded_score": 5.63,
-      "s3_days_to_cover": 6.09,
-      "s3_divergence": 25.62,
+      "s3_borrow_rate_pct": 6.15,
+      "s3_crowded_score": 19.22,
+      "s3_days_to_cover": 4.43,
+      "s3_divergence": 23.09,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 31.25,
+      "s3_squeeze_risk": 42.31,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
-        "sector_etf": "SPY",
-        "sector_vs_spy_pct": 0.0
+        "sector_change_pct": -0.68,
+        "sector_etf": "XLY",
+        "sector_vs_spy_pct": -0.62
       },
-      "spread_pct_est": 0.115,
+      "spread_pct_est": 0.779,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "SBUX",
-      "tradeability": "OK",
+      "symbol": "RIVN",
+      "tradeability": "WEAK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 2.18,
-      "vwap_distance_pct": 0.82,
+      "volume_ratio": 4.53,
+      "vwap_distance_pct": 0.6,
       "warnings": [
         "Market regime is risk-off; be more selective",
+        "Estimated spread/range is wide",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $306.72 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $307.58 or higher target confirmation.",
       "advanced_breakdown": {
-        "composite": 65,
+        "composite": 66,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -2620,14 +2204,14 @@
             "score": 32
           },
           "technical": {
-            "grade": "C",
+            "grade": "B",
             "notes": [
               "above VWAP",
               "above EMA9",
               "above EMA20",
-              "RSI weak/neutral"
+              "RSI healthy"
             ],
-            "score": 70
+            "score": 80
           },
           "volume_liquidity": {
             "grade": "B",
@@ -2642,238 +2226,91 @@
         "grade": "C",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.17,
+      "atr_pct": 0.22,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
       "confidence_label": "MEDIUM-HIGH",
-      "data_age_minutes": 16.9,
+      "data_age_minutes": 25.1,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 5.07,
+      "day_change_pct": 5.4,
       "decision": "WAIT",
-      "dollar_volume": 692053922.25,
-      "ema9_distance_pct": 0.03,
-      "entry_score": 84,
-      "first_seen": "2026-07-02T17:45:27.085679+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 700807351.63,
+      "ema9_distance_pct": 0.13,
+      "entry_score": 82,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 306.72,
-        "entry": 307.57,
-        "invalidation": 298.37,
-        "risk_reward": 0.03,
-        "stop": 298.37,
-        "target1": 307.88,
+        "better_entry": 307.58,
+        "entry": 308.43,
+        "invalidation": 299.83,
+        "risk_reward": 0.11,
+        "stop": 299.83,
+        "target1": 309.42,
         "target1_source": "recent high",
-        "target2": 308.51,
-        "target2_source": "day high"
+        "target2": 316.3,
+        "target2_source": "adjusted stretch target"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": true,
-      "lightgbm_proba": 0.6794,
-      "opportunity_score": 69,
+      "lightgbm_proba": 0.6892,
+      "opportunity_score": 77,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 1,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 2,
         "symbol_target1_rate_pct": 100.0
-      },
-      "panel_approved": false,
-      "panel_confidence": 0.5,
-      "panel_summary": "",
-      "panel_verdict": "PASS",
-      "previous_status": "WEAK RISK/REWARD",
-      "price": 307.57,
-      "reasons": [
-        "Positive intraday move",
-        "Strong momentum",
-        "Above VWAP",
-        "Above EMA20",
-        "Liquid enough",
-        "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Market regime is risk-off"
-      ],
-      "s3_borrow_rate_pct": 2.75,
-      "s3_crowded_score": 3.15,
-      "s3_days_to_cover": 2.88,
-      "s3_divergence": 19.29,
-      "s3_loophole_active": true,
-      "s3_squeeze_risk": 22.44,
-      "sector_context": {
-        "market_regime": "RISK-OFF",
-        "sector_change_pct": -5.48,
-        "sector_etf": "XLK",
-        "sector_vs_spy_pct": -4.94
-      },
-      "spread_pct_est": 0.13,
-      "status": "WEAK RISK/REWARD",
-      "svc_score": 0.0,
-      "symbol": "AAPL",
-      "tradeability": "STRONG",
-      "vix_regime": "NORMAL",
-      "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 1.1,
-      "vwap_distance_pct": 2.5,
-      "warnings": [
-        "Market regime is risk-off; be more selective",
-        "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
-      ]
-    },
-    {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $258.76 or higher target confirmation.",
-      "advanced_breakdown": {
-        "composite": 59,
-        "factors": {
-          "catalyst": {
-            "grade": "D",
-            "notes": [
-              "catalyst quality: unknown"
-            ],
-            "score": 45
-          },
-          "execution_timing": {
-            "grade": "C",
-            "notes": [
-              "near valid VWAP extension"
-            ],
-            "score": 74
-          },
-          "relative_strength": {
-            "grade": "C",
-            "notes": [
-              "positive intraday relative move",
-              "sector inline/slightly ahead",
-              "above short trend"
-            ],
-            "score": 60
-          },
-          "risk_quality": {
-            "grade": "B",
-            "notes": [
-              "chase risk LOW",
-              "volatility manageable",
-              "RR weak"
-            ],
-            "score": 84
-          },
-          "sector_market": {
-            "grade": "F",
-            "notes": [
-              "market risk-off",
-              "sector ETF SPY"
-            ],
-            "score": 32
-          },
-          "technical": {
-            "grade": "D",
-            "notes": [
-              "above VWAP",
-              "above EMA20",
-              "RSI hot"
-            ],
-            "score": 48
-          },
-          "volume_liquidity": {
-            "grade": "C",
-            "notes": [
-              "volume not expanded",
-              "liquid enough",
-              "spread/range acceptable"
-            ],
-            "score": 67
-          }
-        },
-        "grade": "D",
-        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
-      },
-      "atr_pct": 0.09,
-      "catalyst_quality": "UNKNOWN",
-      "chase_risk": "LOW",
-      "confidence_label": "MEDIUM",
-      "data_age_minutes": 17.4,
-      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 4.31,
-      "decision": "WAIT",
-      "dollar_volume": 72246606.25,
-      "ema9_distance_pct": -0.03,
-      "entry_score": 58,
-      "first_seen": "2026-07-02T19:07:42.482369+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
-      "levels": {
-        "better_entry": 258.76,
-        "entry": 259.47,
-        "invalidation": 251.1,
-        "risk_reward": 0.08,
-        "stop": 251.1,
-        "target1": 260.12,
-        "target1_source": "recent high",
-        "target2": 260.2,
-        "target2_source": "day high"
-      },
-      "lgbm_feature_importances": {},
-      "lifecycle": "SETUP_FORMING",
-      "lightgbm_flagged": true,
-      "lightgbm_proba": 0.7495,
-      "opportunity_score": 69,
-      "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
-        "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 7,
-        "symbol_target1_rate_pct": 42.9
       },
       "panel_approved": false,
       "panel_confidence": 0.5,
       "panel_summary": "",
       "panel_verdict": "PASS",
       "previous_status": null,
-      "price": 259.47,
+      "price": 308.43,
       "reasons": [
         "Positive intraday move",
         "Strong momentum",
         "Above VWAP",
         "Above EMA20",
         "Liquid enough",
+        "RSI in healthy zone",
         "Daily trend supportive",
-        "Tradable range/spread estimate",
-        "Market regime is risk-off"
+        "Tradable range/spread estimate"
       ],
-      "s3_borrow_rate_pct": 2.87,
-      "s3_crowded_score": 3.67,
-      "s3_days_to_cover": 4.46,
-      "s3_divergence": 23.97,
+      "s3_borrow_rate_pct": 2.75,
+      "s3_crowded_score": 3.15,
+      "s3_days_to_cover": 2.88,
+      "s3_divergence": 19.95,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 27.64,
+      "s3_squeeze_risk": 23.1,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
-        "sector_etf": "SPY",
-        "sector_vs_spy_pct": 0.0
+        "sector_change_pct": -5.05,
+        "sector_etf": "XLK",
+        "sector_vs_spy_pct": -4.99
       },
-      "spread_pct_est": 0.085,
+      "spread_pct_est": 0.0,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "ABBV",
-      "tradeability": "OK",
+      "symbol": "AAPL",
+      "tradeability": "STRONG",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 0.41,
-      "vwap_distance_pct": 2.75,
+      "volume_ratio": 0.0,
+      "vwap_distance_pct": 2.29,
       "warnings": [
         "Market regime is risk-off; be more selective",
-        "RSI is overheated",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     },
     {
-      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $220.28 or higher target confirmation.",
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $142.07 or higher target confirmation.",
       "advanced_breakdown": {
-        "composite": 55,
+        "composite": 74,
         "factors": {
           "catalyst": {
             "grade": "D",
@@ -2883,19 +2320,172 @@
             "score": 45
           },
           "execution_timing": {
-            "grade": "C",
+            "grade": "A",
             "notes": [
-              "near valid VWAP extension"
+              "near valid VWAP extension",
+              "holding EMA9"
             ],
-            "score": 74
+            "score": 86
           },
           "relative_strength": {
-            "grade": "F",
+            "grade": "B",
+            "notes": [
+              "slightly positive",
+              "sector beating SPY",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 76
+          },
+          "risk_quality": {
+            "grade": "B",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak"
+            ],
+            "score": 84
+          },
+          "sector_market": {
+            "grade": "D",
+            "notes": [
+              "market risk-off",
+              "sector ETF XLC",
+              "sector positive",
+              "sector leading SPY"
+            ],
+            "score": 54
+          },
+          "technical": {
+            "grade": "B",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI healthy"
+            ],
+            "score": 80
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "liquid enough",
+              "spread/range acceptable"
+            ],
+            "score": 90
+          }
+        },
+        "grade": "C",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.11,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.6,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 0.59,
+      "decision": "WAIT",
+      "dollar_volume": 55602344.57,
+      "ema9_distance_pct": 0.09,
+      "entry_score": 94,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 142.07,
+        "entry": 142.46,
+        "invalidation": 140.59,
+        "risk_reward": 0.11,
+        "stop": 140.59,
+        "target1": 142.66,
+        "target1_source": "recent high",
+        "target2": 144.16,
+        "target2_source": "adjusted stretch target"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.5011,
+      "opportunity_score": 74,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 3,
+        "symbol_target1_rate_pct": 33.3
+      },
+      "previous_status": null,
+      "price": 142.46,
+      "reasons": [
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "RSI in healthy zone",
+        "Daily trend supportive",
+        "Tradable range/spread estimate",
+        "Sector/theme is positive"
+      ],
+      "s3_borrow_rate_pct": 4.85,
+      "s3_crowded_score": 12.28,
+      "s3_days_to_cover": 2.75,
+      "s3_divergence": 7.41,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 19.69,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": 0.55,
+        "sector_etf": "XLC",
+        "sector_vs_spy_pct": 0.61
+      },
+      "spread_pct_est": 0.175,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "ROKU",
+      "tradeability": "OK",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 4.82,
+      "vwap_distance_pct": 0.77,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $129.15 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 74,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
+            ],
+            "score": 100
+          },
+          "relative_strength": {
+            "grade": "B",
             "notes": [
               "positive intraday relative move",
-              "sector inline/slightly ahead"
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
             ],
-            "score": 42
+            "score": 80
           },
           "risk_quality": {
             "grade": "B",
@@ -2915,116 +2505,571 @@
             "score": 32
           },
           "technical": {
-            "grade": "F",
+            "grade": "A",
             "notes": [
               "above VWAP",
-              "RSI healthy"
+              "above EMA9",
+              "above EMA20",
+              "RSI hot"
             ],
-            "score": 44
+            "score": 86
           },
           "volume_liquidity": {
-            "grade": "C",
+            "grade": "A",
             "notes": [
-              "volume not expanded",
+              "strong volume expansion",
               "liquid enough",
               "spread/range acceptable"
             ],
-            "score": 67
+            "score": 90
           }
         },
-        "grade": "D",
+        "grade": "C",
         "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
       },
-      "atr_pct": 0.17,
+      "atr_pct": 0.15,
       "catalyst_quality": "UNKNOWN",
       "chase_risk": "LOW",
-      "confidence_label": "MEDIUM",
-      "data_age_minutes": 17.0,
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.4,
       "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
-      "day_change_pct": 5.62,
+      "day_change_pct": 2.11,
       "decision": "WAIT",
-      "dollar_volume": 70977854.76,
-      "ema9_distance_pct": -0.18,
-      "entry_score": 68,
-      "first_seen": "2026-07-02T17:45:27.085679+00:00",
-      "last_seen": "2026-07-02T19:07:42.482369+00:00",
+      "dollar_volume": 60556026.78,
+      "ema9_distance_pct": 0.43,
+      "entry_score": 94,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
       "levels": {
-        "better_entry": 220.28,
-        "entry": 220.89,
-        "invalidation": 211.87,
-        "risk_reward": 0.12,
-        "stop": 211.87,
-        "target1": 221.99,
-        "target1_source": "ATR extension",
-        "target2": 222.14,
-        "target2_source": "recent high"
+        "better_entry": 129.15,
+        "entry": 129.51,
+        "invalidation": 126.07,
+        "risk_reward": 0.03,
+        "stop": 126.07,
+        "target1": 129.6,
+        "target1_source": "recent high",
+        "target2": 132.35,
+        "target2_source": "adjusted stretch target"
       },
       "lgbm_feature_importances": {},
       "lifecycle": "SETUP_FORMING",
       "lightgbm_flagged": false,
-      "lightgbm_proba": 0.6241,
-      "opportunity_score": 67,
+      "lightgbm_proba": 0.581,
+      "opportunity_score": 72,
       "outcome_stats": {
-        "global_avg_pnl_pct_est": 0.23,
-        "global_expired_rate_pct": 32.0,
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
         "global_sample_size": 250,
-        "global_target1_rate_pct": 44.8,
-        "symbol_sample_size": 1,
-        "symbol_target1_rate_pct": 100.0
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 13,
+        "symbol_target1_rate_pct": 61.5
       },
-      "previous_status": "WEAK RISK/REWARD",
-      "price": 220.89,
+      "previous_status": null,
+      "price": 129.51,
       "reasons": [
         "Positive intraday move",
-        "Strong momentum",
+        "Volume expansion",
         "Above VWAP",
+        "Above EMA20",
         "Liquid enough",
-        "RSI in healthy zone",
         "Daily trend supportive",
         "Tradable range/spread estimate",
         "Market regime is risk-off"
       ],
-      "s3_borrow_rate_pct": 3.97,
-      "s3_crowded_score": 12.09,
-      "s3_days_to_cover": 2.94,
-      "s3_divergence": 15.61,
+      "s3_borrow_rate_pct": 2.81,
+      "s3_crowded_score": 3.55,
+      "s3_days_to_cover": 2.77,
+      "s3_divergence": 12.73,
       "s3_loophole_active": true,
-      "s3_squeeze_risk": 27.7,
+      "s3_squeeze_risk": 16.28,
       "sector_context": {
         "market_regime": "RISK-OFF",
-        "sector_change_pct": -0.54,
+        "sector_change_pct": -0.06,
         "sector_etf": "SPY",
         "sector_vs_spy_pct": 0.0
       },
-      "spread_pct_est": 0.186,
+      "spread_pct_est": 0.568,
       "status": "WEAK RISK/REWARD",
       "svc_score": 0.0,
-      "symbol": "ADBE",
+      "symbol": "MRK",
       "tradeability": "OK",
       "vix_regime": "NORMAL",
       "vix_scaled_sentiment": 0.0,
-      "volume_ratio": 0.76,
-      "vwap_distance_pct": 3.66,
+      "volume_ratio": 5.6,
+      "vwap_distance_pct": 2.15,
       "warnings": [
         "Market regime is risk-off; be more selective",
+        "RSI is overheated",
         "Risk/reward not attractive enough",
-        "Risk/reward not attractive"
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $652.56 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 74,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
+            ],
+            "score": 100
+          },
+          "relative_strength": {
+            "grade": "B",
+            "notes": [
+              "positive intraday relative move",
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 80
+          },
+          "risk_quality": {
+            "grade": "B",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak"
+            ],
+            "score": 84
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF SPY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "A",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI hot"
+            ],
+            "score": 86
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "liquid enough",
+              "spread/range acceptable"
+            ],
+            "score": 90
+          }
+        },
+        "grade": "C",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.23,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.5,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 3.61,
+      "decision": "WAIT",
+      "dollar_volume": 51092003.47,
+      "ema9_distance_pct": 0.56,
+      "entry_score": 94,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 652.56,
+        "entry": 654.36,
+        "invalidation": 632.19,
+        "risk_reward": 0.03,
+        "stop": 632.19,
+        "target1": 654.93,
+        "target1_source": "recent high",
+        "target2": 672.67,
+        "target2_source": "adjusted stretch target"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.5002,
+      "opportunity_score": 72,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 3,
+        "symbol_target1_rate_pct": 66.7
+      },
+      "previous_status": null,
+      "price": 654.36,
+      "reasons": [
+        "Positive intraday move",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "Daily trend supportive",
+        "Tradable range/spread estimate",
+        "Market regime is risk-off"
+      ],
+      "s3_borrow_rate_pct": 3.33,
+      "s3_crowded_score": 13.41,
+      "s3_days_to_cover": 2.72,
+      "s3_divergence": 7.35,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 20.76,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.219,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "REGN",
+      "tradeability": "OK",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 4.37,
+      "vwap_distance_pct": 2.92,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "RSI is overheated",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $360.66 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 75,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
+            ],
+            "score": 100
+          },
+          "relative_strength": {
+            "grade": "B",
+            "notes": [
+              "positive intraday relative move",
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 80
+          },
+          "risk_quality": {
+            "grade": "B",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak"
+            ],
+            "score": 84
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF SPY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "A",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI hot"
+            ],
+            "score": 86
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "high dollar volume",
+              "spread/range acceptable"
+            ],
+            "score": 100
+          }
+        },
+        "grade": "B",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.16,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.7,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 3.55,
+      "decision": "WAIT",
+      "dollar_volume": 133655207.49,
+      "ema9_distance_pct": 0.32,
+      "entry_score": 94,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 360.66,
+        "entry": 361.65,
+        "invalidation": 351.65,
+        "risk_reward": 0.18,
+        "stop": 351.65,
+        "target1": 363.46,
+        "target1_source": "ATR extension",
+        "target2": 364.81,
+        "target2_source": "stretch ATR extension"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": true,
+      "lightgbm_proba": 0.6519,
+      "opportunity_score": 72,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 7,
+        "symbol_target1_rate_pct": 28.6
+      },
+      "panel_approved": false,
+      "panel_confidence": 0.5,
+      "panel_summary": "",
+      "panel_verdict": "PASS",
+      "previous_status": null,
+      "price": 361.65,
+      "reasons": [
+        "Positive intraday move",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "Daily trend supportive",
+        "Tradable range/spread estimate",
+        "Market regime is risk-off"
+      ],
+      "s3_borrow_rate_pct": 2.82,
+      "s3_crowded_score": 1.54,
+      "s3_days_to_cover": 2.72,
+      "s3_divergence": 17.46,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 19.0,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.431,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "V",
+      "tradeability": "OK",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 3.8,
+      "vwap_distance_pct": 2.27,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "RSI is overheated",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
+      ]
+    },
+    {
+      "action_text": "Wait. Risk/reward is weak. Needs cleaner entry near $130.88 or higher target confirmation.",
+      "advanced_breakdown": {
+        "composite": 74,
+        "factors": {
+          "catalyst": {
+            "grade": "D",
+            "notes": [
+              "catalyst quality: unknown"
+            ],
+            "score": 45
+          },
+          "execution_timing": {
+            "grade": "A",
+            "notes": [
+              "near valid VWAP extension",
+              "breakout timing",
+              "holding EMA9"
+            ],
+            "score": 100
+          },
+          "relative_strength": {
+            "grade": "B",
+            "notes": [
+              "positive intraday relative move",
+              "sector inline/slightly ahead",
+              "above short trend",
+              "move has volume support"
+            ],
+            "score": 80
+          },
+          "risk_quality": {
+            "grade": "B",
+            "notes": [
+              "chase risk LOW",
+              "volatility manageable",
+              "RR weak"
+            ],
+            "score": 84
+          },
+          "sector_market": {
+            "grade": "F",
+            "notes": [
+              "market risk-off",
+              "sector ETF SPY"
+            ],
+            "score": 32
+          },
+          "technical": {
+            "grade": "A",
+            "notes": [
+              "above VWAP",
+              "above EMA9",
+              "above EMA20",
+              "RSI hot"
+            ],
+            "score": 86
+          },
+          "volume_liquidity": {
+            "grade": "A",
+            "notes": [
+              "strong volume expansion",
+              "liquid enough",
+              "spread/range acceptable"
+            ],
+            "score": 90
+          }
+        },
+        "grade": "C",
+        "summary": "Advanced view explains the score drivers; the simple BUY/WAIT decision still controls action."
+      },
+      "atr_pct": 0.19,
+      "catalyst_quality": "UNKNOWN",
+      "chase_risk": "LOW",
+      "confidence_label": "MEDIUM-HIGH",
+      "data_age_minutes": 35.7,
+      "data_source": "Alpaca IEX optional adapter with Yahoo fallback",
+      "day_change_pct": 3.74,
+      "decision": "WAIT",
+      "dollar_volume": 44982733.11,
+      "ema9_distance_pct": 0.48,
+      "entry_score": 94,
+      "first_seen": "2026-07-02T20:31:03.677947+00:00",
+      "last_seen": "2026-07-02T20:31:03.677947+00:00",
+      "levels": {
+        "better_entry": 130.88,
+        "entry": 131.24,
+        "invalidation": 127.65,
+        "risk_reward": 0.06,
+        "stop": 127.65,
+        "target1": 131.44,
+        "target1_source": "recent high",
+        "target2": 131.57,
+        "target2_source": "day high"
+      },
+      "lgbm_feature_importances": {},
+      "lifecycle": "SETUP_FORMING",
+      "lightgbm_flagged": false,
+      "lightgbm_proba": 0.6484,
+      "opportunity_score": 72,
+      "outcome_stats": {
+        "global_avg_pnl_pct_est": 0.04,
+        "global_expired_rate_pct": 30.0,
+        "global_sample_size": 250,
+        "global_target1_rate_pct": 41.6,
+        "symbol_sample_size": 0,
+        "symbol_target1_rate_pct": null
+      },
+      "previous_status": null,
+      "price": 131.24,
+      "reasons": [
+        "Positive intraday move",
+        "Volume expansion",
+        "Above VWAP",
+        "Above EMA20",
+        "Liquid enough",
+        "Daily trend supportive",
+        "Tradable range/spread estimate",
+        "Market regime is risk-off"
+      ],
+      "s3_borrow_rate_pct": 2.98,
+      "s3_crowded_score": 3.87,
+      "s3_days_to_cover": 3.02,
+      "s3_divergence": 17.23,
+      "s3_loophole_active": true,
+      "s3_squeeze_risk": 21.1,
+      "sector_context": {
+        "market_regime": "RISK-OFF",
+        "sector_change_pct": -0.06,
+        "sector_etf": "SPY",
+        "sector_vs_spy_pct": 0.0
+      },
+      "spread_pct_est": 0.347,
+      "status": "WEAK RISK/REWARD",
+      "svc_score": 0.0,
+      "symbol": "GILD",
+      "tradeability": "OK",
+      "vix_regime": "NORMAL",
+      "vix_scaled_sentiment": 0.0,
+      "volume_ratio": 4.52,
+      "vwap_distance_pct": 2.23,
+      "warnings": [
+        "Market regime is risk-off; be more selective",
+        "RSI is overheated",
+        "Risk/reward not attractive enough",
+        "Risk/reward not attractive",
+        "Data may be stale"
       ]
     }
   ],
-  "stale_symbol_count": 0,
+  "stale_symbol_count": 44,
   "summary": {
-    "avg_pnl_pct_est": 0.23,
+    "avg_pnl_pct_est": 0.04,
     "buy_setups": 0,
     "deep_symbols_checked": 44,
     "outcome_sample_size": 250,
     "symbols_checked": 44,
-    "target1_rate_pct": 44.8,
+    "target1_rate_pct": 41.6,
     "total": 20,
     "wait": 20,
     "watch_only": 0,
     "wide_symbols_checked": 147
   },
-  "updated_at_et": "2026-07-02 03:07:42 PM ET",
+  "updated_at_et": "2026-07-02 04:31:03 PM ET",
   "validation_warning": null
 }
